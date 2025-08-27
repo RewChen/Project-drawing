@@ -1,0 +1,65 @@
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
+
+}
+
+.menu {
+    display: flex;
+    list-style: none;
+}
+
+.menu li {
+    margin-left: 20px;
+    padding-right: 30px;
+}
+
+.menu li a {
+    text-decoration: none;
+    font-size: 18px;
+    color: #000;
+}
+
+.hero {
+      position: relative;
+      width: 90%;
+      height: 80vh;
+      background-image: url('/main/img/band.jpg');
+      background-size: cover;
+      background-position: center;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start; 
+      padding-left: 100px;
+    }
+
+    .hero-text {
+      color: white;
+    }
+
+    .hero-text h1 {
+      font-size: 80px;
+      font-weight: bold;
+    }
+
+    .hero-text h1 span {
+      color: #32CD32;
+    }
+
+    .hero-text button {
+      margin-top: 20px;
+      padding: 10px 30px;
+      font-size: 24px;
+      border: none;
+      background-color: #124d2d;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .hero-text button:hover {
+      background-color: #0b3a22;
+    }
