@@ -18,10 +18,10 @@ This project is part of the Database course. It is a website for booking tables 
 # Team Job position (ตำแหน่งงานของทีม)
 | Student ID | Name | Position |
 |----------|----------|----------|
-| 67024986 | Thanakorn Chaipian | Front-End Developer |
-| 67025033 | Pontakon Unmueabg | Front-End Developer |
-| 67022568 | CHANISARA RAKPHO | UX/UI Design |
-| 67022614 | NATTHAPHONG AINKHAM | UX/UI Design |
+| 67024986 | Thanakorn Chaipian | Project Owner / Developer |
+| 67025033 | Pontakon Unmueabg | Business Analysis / UX UI |
+| 67022568 | CHANISARA RAKPHO | Business Analysis / Developer |
+| 67022614 | NATTHAPHONG AINKHAM | Business Analysis / UX UI |
 # Contact
 หากมีคำถาม สามารถติดต่อได้ทางนี้
 - E-mail: 67024986@up.ac.th
