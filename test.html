@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>จองโต๊ะ - Tong-Lis Café</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;font-family:Tahoma, 'Noto Sans Thai', sans-serif}
+    body{background:#f9fafb;color:#111}
+
+    /* Navbar */
+    header{background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.1);padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+    header img{height:56px;width:56px;border-radius:50%}
+    nav a{margin-left:28px;text-decoration:none;color:#111;font-size:15px;font-weight:500}
+    nav a:hover{color:#0f5132}
+
+    /* Layout */
+    .container{max-width:1200px;margin:20px auto;padding:20px;}
+    .content{background:url('/assets/bg.jpg') center/cover no-repeat;border-radius:12px;min-height:600px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;flex-direction:column}
+    .content::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.35)}
+
+    /* Foreground */
+    .overlay{position:relative;z-index:1;text-align:center;color:white;width:100%}
+
+    .map-box{display:inline-block;background:#333;border-radius:8px;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,0.3)}
+    .map-box img{display:block;max-width:100%;height:auto}
+
+    .btn{display:inline-block;padding:14px 32px;margin:20px auto;font-size:20px;border-radius:30px;border:none;cursor:pointer;font-weight:bold}
+    .btn-green{background:#0f5132;color:white;}
+    .btn-green:hover{background:#0c3c25}
+    .btn-red{background:#a00;color:white;border-radius:50px;}
+    .btn-red:hover{background:#800}
+
+    /* Dropdown */
+    select{appearance:none;background:#0f5132;color:white;padding:14px 24px;border:none;border-radius:30px;font-size:18px;font-weight:500;cursor:pointer;margin:20px auto;}
+    select:focus{outline:none;box-shadow:0 0 0 3px rgba(16,185,129,0.5)}
+
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display:flex;align-items:center;gap:10px">
+      <img src="/assets/logo.png" alt="logo">
+      <span style="font-weight:bold;font-size:18px">Tong-Lis Café</span>
+    </div>
+    <nav>
+      <a href="#">เข้าสู่ระบบ</a>
+      <a href="#">หน้าหลัก</a>
+      <a href="#">แจ้งเตือน</a>
+      <a href="#">ติดต่อเรา</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="content">
+      <div class="overlay">
+        <div class="map-box">
+          <!-- แทนที่ src ด้วยผังโต๊ะ -->
+          <img src="/assets/map.png" alt="ผังโต๊ะ">
+        </div>
+
+        <button class="btn btn-green">เลือกโต๊ะ</button><br>
+
+        <select id="tableSelect">
+          <option value="">กรุณาเลือกโต๊ะ</option>
+          <option value="A1">A1</option>
+          <option value="A2">A2</option>
+          <option value="B1">B1</option>
+        </select><br>
+
+        <button class="btn btn-red" onclick="confirmTable()">ตกลง</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function confirmTable(){
+      const table = document.getElementById('tableSelect').value;
+      if(table){
+        alert('คุณเลือกโต๊ะ: ' + table);
+      }else{
+        alert('กรุณาเลือกโต๊ะก่อนกดตกลง');
+      }
+    }
+  </script>
+</body>
+</html>
