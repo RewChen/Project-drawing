@@ -19,12 +19,30 @@
         url('band.jpg') center/cover no-repeat fixed;
       color:#1a1a1a;
     }
-    .glass-nav{
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      background: rgba(255,255,255,.85);
-      border-bottom: 1px solid rgba(255,255,255,.6);
-    }
+    nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
+
+}
+
+.menu {
+    display: flex;
+    list-style: none;
+}
+
+.menu li {
+    margin-left: 20px;
+    padding-right: 30px;
+}
+
+.menu li a {
+    text-decoration: none;
+    font-size: 18px;
+    color: #000;
+}
     .glass-card{
       background: var(--glass-bg);
       border: 1px solid var(--glass-brd);
@@ -55,18 +73,18 @@
 </head>
 <body>
 
-  <!-- Nav -->
-  <nav class="navbar glass-nav">
-    <div class="container">
-      <a class="navbar-brand d-flex align-items-center gap-2" href="index.html">
-        <span class="logo-pill">TB</span>
-        <span class="fw-bold">Tasty Bar</span>
-      </a>
-      <div class="ms-auto d-none d-md-block">
-        <a href="index.html" class="btn btn-sm btn-outline-dark rounded-pill px-3">กลับไปค้นหา</a>
-      </div>
-    </div>
-  </nav>
+   <nav>
+        <div class="logo">
+            <img src="/main/img/logo.png" alt="logo">
+        </div>
+
+        <ul class="menu">
+            <li><a href="">เข้าสู่ระบบ</a></li>
+            <li><a href="">หน้าหลัก</a></li>
+            <li><a href="">แจ้งเตือน</a></li>
+            <li><a href="">ติดต่อเรา</a></li>
+        </ul>
+    </nav>  
 
   <main class="d-flex justify-content-center">
     <div class="container">
