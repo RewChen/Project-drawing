@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ค้นหาการจองโต๊ะ | ร้าน</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Google Font (ไม่บังคับ) -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --brand-red:#a51212;
+      --glass-bg: rgba(255,255,255,.78);
+      --glass-brd: rgba(255,255,255,.55);
+    }
+    html, body{
+      height:100%;
+      font-family: "Noto Sans Thai", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      color:#1a1a1a;
+    }
+
+    /* พื้นหลังเป็นภาพที่ให้มา */
+    body{
+      background: 
+        linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.55)),
+        url('band.jpg') center / cover no-repeat fixed;
+    }
+
+    /* Navbar โปร่งนิดหน่อย */
+    .glass-nav{
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      background: rgba(255,255,255,.85);
+      border-bottom: 1px solid rgba(255,255,255,.6);
+    }
+
+    /* กล่องค้นหาแบบฟรอสต์แก้ว */
+    .glass-card{
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-brd);
+      border-radius: 1.25rem;           /* rounded-4 */
+      box-shadow: 0 10px 35px rgba(0,0,0,.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    /* ปุ่มแดง */
+    .btn-brand{
+      background-color: var(--brand-red);
+      border-color: var(--brand-red);
+    }
+    .btn-brand:hover, .btn-brand:focus{
+      background-color:#8f0f0f;
+      border-color:#8f0f0f;
+    }
+
+    /* ช่องกรอกให้ดูสะอาด */
+    .form-control{
+      border-radius: .75rem;
+    }
+
+    /* โลโก้วงกลมเล็กซ้ายบน (ถ้าไม่มีรูปจริง ใช้ตัวอักษรแทน) */
+    .logo-pill{
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-weight: 700; letter-spacing:.5px;
+      background:#000; color:#ffd54d;
+      box-shadow: 0 2px 8px rgba(0,0,0,.35);
+    }
+
+    /* ระยะห่างส่วนกลางให้ใกล้เคียงรูปตัวอย่าง */
+    main{
+      padding-top: min(7vh, 48px);
+      padding-bottom: min(7vh, 48px);
+    }
+
+    /* ปรับ label แบบไทยตามภาพ (มี "ชื่อ :") */
+    .thai-label{
+      font-weight:600; min-width: 3.5rem;
+    }
+
+    /* ทำให้การ์ดไม่ชิดขอบในจอเล็ก */
+    .search-wrap{
+      max-width: 980px;
+    }
+
+    /* โฟกัส input ชัดขึ้นบนพื้นหลังสีเข้ม */
+    .form-control:focus{
+      border-color:#7c4dff;
+      box-shadow: 0 0 0 .25rem rgba(124,77,255,.2);
+    }
+
+    /* ลิงก์ในเมนู */
+    .nav-link{ font-weight:600; }
+    .nav-link.active{ color:#000 !important; }
+  </style>
+</head>
+<body>
+
+  <!-- นาวบาร์ -->
+  <nav class="navbar navbar-expand-lg glass-nav">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+        <span class="logo-pill">TB</span>
+        <span class="fw-bold">Tasty Bar</span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav" aria-controls="topNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div id="topNav" class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-lg-center">
+          <li class="nav-item"><a class="nav-link" href="#login">เข้าสู่ระบบ</a></li>
+          <li class="nav-item"><a class="nav-link active" aria-current="page" href="#">หน้าหลัก</a></li>
+          <li class="nav-item"><a class="nav-link" href="#notify">แจ้งเตือน</a></li>
+          <li class="nav-item ms-lg-2">
+            <a class="btn btn-sm btn-outline-dark rounded-pill px-3" href="#contact">ติดต่อเรา</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ส่วนหลัก -->
+  <main class="d-flex justify-content-center align-items-start">
+    <div class="container d-flex justify-content-center">
+      <div class="search-wrap w-100 glass-card p-4 p-sm-5">
+        <!-- หัวกล่อง (ถ้าต้องการ) -->
+        <!-- <h1 class="h5 fw-bold mb-4">ค้นหาการจอง</h1> -->
+
+        <form id="searchForm" class="row gy-3 align-items-center">
+          <!-- ชื่อ -->
+          <div class="col-12 col-md-5 d-flex align-items-center gap-2">
+            <label for="custName" class="thai-label">ชื่อ :</label>
+            <input
+              type="text"
+              class="form-control"
+              id="custName"
+              name="name"
+              placeholder="กรอกชื่อ"
+              autocomplete="name"
+              required
+            >
+          </div>
+
+          <!-- เบอร์โทร -->
+          <div class="col-12 col-md-5 d-flex align-items-center gap-2">
+            <label for="custPhone" class="thai-label">เบอร์โทร:</label>
+            <input
+              type="tel"
+              class="form-control"
+              id="custPhone"
+              name="phone"
+              placeholder="กรอกเบอร์โทร"
+              inputmode="tel"
+              pattern="^0[0-9]{8,9}$"
+              aria-describedby="phoneHelp"
+              required
+            >
+          </div>
+
+          <!-- ปุ่มค้นหา -->
+          <div class="col-12 col-md-2 text-md-start">
+            <button type="submit" class="btn btn-brand w-100 rounded-3 fw-semibold">
+              ค้นหา
+            </button>
+          </div>
+        </form>
+
+        <!-- พื้นที่ผลลัพธ์ -->
+        <div id="resultArea" class="mt-4 d-none">
+          <div class="alert alert-info mb-0 rounded-3" role="alert">
+            <div class="fw-semibold mb-1">ผลการค้นหา</div>
+            <div id="resultText" class="small"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer เล็กๆ ถ้าต้องการ -->
+  <footer class="text-center text-white-50 small py-4">
+    © <span id="y"></span> Tasty Bar · All rights reserved.
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- JavaScript (ตัวอย่างการทำงานปุ่มค้นหา) -->
+  <script>
+    // ปีในฟุตเตอร์
+     document.getElementById('y').textContent = new Date().getFullYear();
+
+  const form = document.getElementById('searchForm');
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.classList.add('was-validated');
+      return;
+    }
+    const name  = document.getElementById('custName').value.trim();
+    const phone = document.getElementById('custPhone').value.trim();
+    // ส่งค่าผ่าน query string ไปหน้าผลลัพธ์
+    const qs = new URLSearchParams({ name, phone }).toString();
+    window.location.href = `results.html?${qs}`;
+
+      // ตัวอย่างโค้ดสำหรับเรียก API (เอา /* ... */ ออกเมื่อมี endpoint จริง)
+      /*
+      fetch('/api/reservations/search', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name, phone })
+      }).then(r => r.json())
+        .then(data => {
+          // TODO: แสดงผลลัพธ์จริง
+        }).catch(err => {
+          resultText.textContent = 'เกิดข้อผิดพลาดในการค้นหา โปรดลองใหม่อีกครั้ง';
+        });
+      */
+    });
+  </script>
+</body>
+</html>
