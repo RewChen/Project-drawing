@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,19 +8,56 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- แถบเมนู -->
     <nav>
         <div class="logo">
             <img src="/main/img/logo.png" alt="logo">
         </div>
-
         <ul class="menu">
-            <li><a href="">เข้าสู่ระบบ</a></li>
-            <li><a href="">หน้าหลัก</a></li>
-            <li><a href="">แจ้งเตือน</a></li>
-            <li><a href="">ติดต่อเรา</a></li>
+            <li><a href="#">เข้าสู่ระบบ</a></li>
+            <li><a href="#">หน้าหลัก</a></li>
+            <li><a href="#">แจ้งเตือน</a></li>
+            <li><a href="#">ติดต่อเรา</a></li>
         </ul>
     </nav>  
 
-    
-</body>
+    <!-- พื้นหลังรูป + คอนเทนท์ -->
+    <div class="background">
+        <div class="colum">
+            <!-- ผังโต๊ะ -->
+            <div class="img">
+                <img src="/Reservation/img/table.png" alt="ผังโต๊ะ">
+            </div> 
+            
+            <!-- ส่วนเลือกโต๊ะ -->
+        <div class="reserve-box">
+            <div class="reserve-title">เลือกโต๊ะ</div>
+            <select id="tableSelect">
+                <option value="">กรุณาเลือกโต๊ะ</option>
+                <option value="1">โต๊ะ 1 (ว่าง)</option>
+                <option value="2">โต๊ะ 2 (ว่าง)</option>
+                <option value="3" disabled>โต๊ะ 3 (ไม่ว่าง)</option>
+            </select>
+            <button id="confirmBtn">ตกลง</button>
+      </div>
+    </div>
+  </div>
+
+    <script>
+         document.getElementById("confirmBtn").addEventListener("click", () => {
+            let table = document.getElementById("tableSelect");
+            let selectedOption = table.options[table.selectedIndex];
+
+            if (table.value) {
+                if (selectedOption.disabled) {
+                alert("โต๊ะนี้ไม่ว่าง กรุณาเลือกโต๊ะอื่น");
+                } else {
+                alert("คุณเลือก " + selectedOption.text);
+                }
+            } else {
+                alert("กรุณาเลือกโต๊ะก่อน");
+            }
+    });
+    </script>
+</body> 
 </html>
