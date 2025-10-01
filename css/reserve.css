@@ -2,39 +2,40 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Sarabun", sans-serif;
 }
 
-body {
-  background-color: #000;
-}
-
-/* Navbar */
 nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 30px;
-  background-color: #fff;
-}
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #fff;
 
-.logo img {
-  height: 60px;
 }
 
 .menu {
-  display: flex;
-  list-style: none;
+    display: flex;
+    list-style: none;
 }
 
 .menu li {
-  margin-left: 20px;
+    margin-left: 20px;
+    padding-right: 30px;
 }
 
 .menu li a {
-  text-decoration: none;
-  font-size: 18px;
-  color: #000;
+    text-decoration: none;
+    font-size: 18px;
+    color: #000;
+}
+
+.contianer {
+  display: flex;
+  width: 100%;
+  padding: 0px 80px;
+  padding-bottom: 80px;
+  
+
 }
 
 /* Background */

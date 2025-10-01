@@ -13,7 +13,7 @@
     body{
       background: 
         linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.55)),
-        url('band.jpg') center / cover no-repeat fixed;
+        url('/img/band.jpg') center / cover no-repeat fixed;
     }
 
     nav {
@@ -90,6 +90,7 @@
     /* ทำให้การ์ดไม่ชิดขอบในจอเล็ก */
     .search-wrap{
       max-width: 980px;
+      height: 80vh;
     }
 
     /* โฟกัส input ชัดขึ้นบนพื้นหลังสีเข้ม */
