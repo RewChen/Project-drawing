@@ -8,42 +8,41 @@
   <link rel="icon" type="image/png" href="/main/img/logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --brand-red:#a51212;
-      --glass-bg: rgba(255,255,255,.78);
-      --glass-brd: rgba(255,255,255,.55);
-    }
-    html,body{height:100%;}
-    body{
-      background:
-        linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.55)),
-        url('band.jpg') center/cover no-repeat fixed;
-      color:#1a1a1a;
-    }
-    nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #fff;
+   @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap');
 
-    }
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Sans Thai', sans-serif;
+}
 
-    .menu {
-        display: flex;
-        list-style: none;
-    }
+/* Navbar */
+.navbar {
+  width: 100%;
+  background: #fff;
+  padding: 10px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
 
-    .menu li {
-        margin-left: 20px;
-        padding-right: 30px;
-    }
+.navbar .logo {
+  width: 80px;
+}
 
-    .menu li a {
-        text-decoration: none;
-        font-size: 18px;
-        color: #000;
-    }
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.navbar ul li a {
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+}
     .glass-card{
       background: var(--glass-bg);
       border: 1px solid var(--glass-brd);
@@ -74,18 +73,15 @@
 </head>
 <body>
 
-   <nav>
-        <div class="logo">
-            <img src="/img/logo.png" alt="logo">
-        </div>
-
-        <ul class="menu">
-            <li><a href="">เข้าสู่ระบบ</a></li>
-            <li><a href="">หน้าหลัก</a></li>
-            <li><a href="">แจ้งเตือน</a></li>
-            <li><a href="">ติดต่อเรา</a></li>
-        </ul>
-    </nav>  
+    <div class="navbar">
+      <img src="/img/logo.png" alt="logo" class="logo">
+      <ul>
+        <li><a href="#">เข้าสู่ระบบ</a></li>
+        <li><a href="#">หน้าหลัก</a></li>
+        <li><a href="#">แจ้งเตือน</a></li>
+        <li><a href="#">ติดต่อเรา</a></li>
+      </ul>
+    </div> 
 
   <main class="d-flex justify-content-center">
     <div class="container">
@@ -115,7 +111,7 @@
         </div>
 
         <div class="d-flex gap-2 mt-4">
-          <a href="index.html" class="btn btn-outline-dark rounded-3">กลับไปค้นหา</a>
+          <a href="/html/manage.html" class="btn btn-outline-dark rounded-3">กลับไปค้นหา</a>
           <button id="newSearch" class="btn btn-brand rounded-3">เริ่มค้นหาใหม่</button>
         </div>
       </div>

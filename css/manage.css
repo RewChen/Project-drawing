@@ -3,11 +3,7 @@
       --glass-bg: rgba(255,255,255,.78);
       --glass-brd: rgba(255,255,255,.55);
     }
-    html, body{
-      height:100%;
-      font-family: "Noto Sans Thai", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-      color:#1a1a1a;
-    }
+
 
     /* พื้นหลังเป็นภาพที่ให้มา */
     body{
@@ -53,7 +49,6 @@
   color: black;
   font-weight: 600;
 }
-
 
     /* กล่องค้นหาแบบฟรอสต์แก้ว */
     .glass-card{
