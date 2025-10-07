@@ -97,7 +97,8 @@
     const name  = document.getElementById('custName').value.trim();
     const phone = document.getElementById('custPhone').value.trim();
     const qs = new URLSearchParams({ name, phone }).toString();
-    window.location.href = `/html/results.html?${qs}`;
+    window.location.href = "results.html?" + qs;
+
 
   
     });
