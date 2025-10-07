@@ -14,32 +14,46 @@
       background: 
         linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.55)),
         url('/img/band.jpg') center / cover no-repeat fixed;
+         overflow-x: hidden;
     }
 
-    nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #fff;
 
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Sans Thai', sans-serif;
 }
 
-.menu {
-    display: flex;
-    list-style: none;
+/* Navbar */
+.navbar {
+  width: 100%;
+  background: #fff;
+  padding: 10px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
 }
 
-.menu li {
-    margin-left: 20px;
-    padding-right: 30px;
+.navbar .logo {
+  width: 80px;
 }
 
-.menu li a {
-    text-decoration: none;
-    font-size: 18px;
-    color: #000;
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 25px;
 }
+
+.navbar ul li a {
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+}
+
 
     /* กล่องค้นหาแบบฟรอสต์แก้ว */
     .glass-card{

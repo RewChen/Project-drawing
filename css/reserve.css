@@ -40,7 +40,7 @@ nav {
 
 /* Background */
 .background {
-  background: url("/Reservation/img/band.jpg") no-repeat center center;
+  background: url("/img/band.jpg") no-repeat center center;
   background-size: cover;
   width: 100%;
   height: calc(100vh - 80px);
