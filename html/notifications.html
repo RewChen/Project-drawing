@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>การแจ้งเตือน | Tasty Bar</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="/img/logo.png">
+
+  <style>
+    :root{
+      --glass-bg: rgba(255,255,255,.75);
+      --glass-brd: rgba(255,255,255,.6);
+      --brand-green:#2e7d32; --brand-green-dark:#256628;
+      --brand-red:#a51212;   --brand-red-dark:#8f0f0f;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;font-family:'Noto Sans Thai',sans-serif;}
+
+    /* ===== New Navbar ===== */
+    header{position:relative; z-index:3; padding:12px 0;}
+    .nav-shell{
+      background:#fff; border:1px solid rgba(0,0,0,.08); border-radius:14px;
+      box-shadow:0 2px 8px rgba(0,0,0,.06); min-height:64px;
+    }
+    .brand-logo{width:56px; height:56px; object-fit:contain; border-radius:50%;}
+    .nav-list{list-style:none; display:flex; align-items:center; gap:28px; margin:0; padding:0;}
+    .nav-list a{text-decoration:none; color:#111; font-weight:700; letter-spacing:.2px;}
+    .nav-list a:hover{opacity:.75;}
+    @media (max-width:576px){ .brand-logo{width:48px;height:48px;} .nav-list{gap:16px;} .nav-list a{font-weight:600;} }
+
+    /* ===== BG & Card ===== */
+    .hero-bg{position:fixed;inset:0;z-index:0;background:url('/img/bg-bar.jpg') center/cover no-repeat;}
+    .hero-mask{position:fixed;inset:0;z-index:1;background:rgba(0,0,0,.35);backdrop-filter:saturate(120%) blur(2px);-webkit-backdrop-filter:saturate(120%) blur(2px);}
+    .glass-card{background:var(--glass-bg);border:1px solid var(--glass-brd);border-radius:1.25rem;box-shadow:0 12px 40px rgba(0,0,0,.25);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+    main{position:relative;z-index:2;padding-top:min(6vh,42px);padding-bottom:min(8vh,56px);}
+
+    .pill-title{display:inline-block;padding:.35rem 1.25rem;border-radius:999px;background:#184b1b;color:#fff;font-weight:700;}
+    .notif-item{background:#fff;border-radius:.875rem;border:1px solid rgba(0,0,0,.08);padding:.9rem 1rem;display:flex;align-items:center;gap:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
+    .notif-click{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit;flex:1;}
+    .notif-icon{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;background:#fff3cd;color:#b54708;border:1px solid rgba(0,0,0,.06);flex:0 0 auto;font-size:1.1rem;}
+    .notif-title{font-weight:700;color:#222;}
+    .notif-sub{font-size:.9rem;color:#6c757d;}
+    .btn-approve{background:var(--brand-green);border-color:var(--brand-green);color:#fff;font-weight:600;border-radius:999px;padding:.45rem 1.1rem;}
+    .btn-approve:hover{background:var(--brand-green-dark);border-color:var(--brand-green-dark);}
+    .btn-cancel{background:var(--brand-red);border-color:var(--brand-red);color:#fff;font-weight:600;border-radius:999px;padding:.45rem 1.1rem;}
+    .btn-cancel:hover{background:var(--brand-red-dark);border-color:var(--brand-red-dark);}
+  </style>
+</head>
+<body>
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-mask" aria-hidden="true"></div>
+
+  <!-- NAVBAR ใหม่ -->
+  <header>
+    <div class="container-xxl">
+      <div class="nav-shell d-flex align-items-center justify-content-between px-3 px-sm-4">
+        <a href="/html/index.html" class="d-inline-flex align-items-center gap-2 text-decoration-none">
+          <img src="/img/logo.png" alt="Tasty Bar" class="brand-logo">
+        </a>
+        <nav aria-label="primary">
+          <ul class="nav-list">
+            <li><a href="/html/login.html">เข้าสู่ระบบ</a></li>
+            <li><a href="/html/index.html">หน้าหลัก</a></li>
+            <li><a href="/html/notifications.html" aria-current="page">แจ้งเตือน</a></li>
+            <li><a href="/html/contact.html">ติดต่อเรา</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main class="d-flex justify-content-center">
+    <div class="container">
+      <div class="glass-card p-4 p-sm-5 mx-auto" style="max-width:980px">
+        <div class="text-center mb-3"><span class="pill-title">การแจ้งเตือน</span></div>
+
+        <!-- ตัวกรอง -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div class="text-secondary fw-semibold">รายการล่าสุด</div>
+          <select id="filter" class="form-select form-select-sm" style="width:auto">
+            <option value="pending" selected>เฉพาะรอดำเนินการ</option>
+            <option value="all">ทั้งหมด</option>
+            <option value="confirmed">ยืนยันแล้ว</option>
+            <option value="canceled">ยกเลิกแล้ว</option>
+          </select>
+        </div>
+
+        <div id="notifList" class="vstack gap-3"></div>
+        <div id="empty" class="alert alert-light border text-center d-none mt-3">ไม่มีรายการตามตัวกรอง</div>
+
+        <div class="d-flex gap-2 mt-4">
+          <a href="/html/manage.html" class="btn btn-outline-dark rounded-3">กลับไปค้นหา</a>
+          <a href="/html/index.html" class="btn btn-dark rounded-3">หน้าหลัก</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="text-center text-white-50 small py-4">
+    © <span id="y"></span> Tasty Bar
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // ===== Mock DB via localStorage =====
+    const KEY = 'reservations';
+    function seedIfEmpty(){
+      if(localStorage.getItem(KEY)) return;
+      const demo = [
+        { id:'RSV-001', table:'1',   date:'18/4/2023',  name:'ไอเติ้ล',    email:'12345@gmail.com',        phone:'0999999999',  status:'pending' },
+        { id:'RSV-002', table:'A5',  date:'05/05/2024', name:'ออมสิน',     email:'aomsin@example.com',    phone:'0812345678',  status:'pending' },
+        { id:'RSV-003', table:'A12', date:'12/09/2025', name:'Thanakorn',  email:'thanakorn@example.com', phone:'0900000000', status:'pending' },
+      ];
+      localStorage.setItem(KEY, JSON.stringify(demo));
+    }
+    function loadAll(){ try{return JSON.parse(localStorage.getItem(KEY))||[]}catch{return[]} }
+    function saveAll(list){ localStorage.setItem(KEY, JSON.stringify(list)); }
+    function updateStatus(id, status, cancelReason=''){
+      const all = loadAll();
+      const i = all.findIndex(x=>x.id===id);
+      if(i>-1){
+        all[i].status = status;
+        if(status === 'pending') delete all[i].cancelReason;
+        if(cancelReason) all[i].cancelReason = cancelReason;
+        saveAll(all);
+        return all[i];
+      }
+      return null;
+    }
+
+    // ===== Render =====
+    seedIfEmpty();
+    const wrap  = document.getElementById('notifList');
+    const empty = document.getElementById('empty');
+    const filterEl = document.getElementById('filter');
+
+    function getFilteredItems(mode){
+      const all = loadAll();
+      if(mode === 'all') return all;
+      return all.filter(x => x.status === mode);
+    }
+
+    function render(){
+      wrap.innerHTML = '';
+      const mode  = filterEl.value || 'pending';
+      const items = getFilteredItems(mode);
+      empty.classList.toggle('d-none', items.length > 0);
+
+      items.forEach(n=>{
+        const row = document.createElement('div');
+        row.className = 'notif-item';
+        row.dataset.id = n.id;
+
+        const left = document.createElement('a');
+        left.className = 'notif-click';
+        left.href = `/html/reservation-detail.html?id=${encodeURIComponent(n.id)}`;
+        left.innerHTML = `
+          <div class="notif-icon"><i class="bi bi-bell-fill"></i></div>
+          <div>
+            <div class="notif-title">${ n.status === 'pending' ? 'รอดำเนินการ'
+                                  : n.status === 'confirmed' ? 'ยืนยันแล้ว'
+                                  : 'ยกเลิกแล้ว' }</div>
+            <div class="notif-sub">โต๊ะ ${n.table} • ${n.date} • ${n.name}</div>
+          </div>
+        `;
+        row.appendChild(left);
+
+        const right = document.createElement('div');
+        right.className = 'd-flex gap-2';
+
+        if(n.status === 'pending'){
+          const btnCancel = document.createElement('button');
+          btnCancel.className = 'btn btn-cancel';
+          btnCancel.textContent = 'ยกเลิก';
+          btnCancel.addEventListener('click', (e)=>{
+            e.preventDefault();
+            const reason = prompt('ระบุเหตุผลการยกเลิก (ตัวอย่าง: เปลี่ยนใจ)');
+            if(reason === null) return;
+            updateStatus(n.id, 'canceled', reason.trim());
+            row.remove();
+            if(!wrap.children.length) empty.classList.remove('d-none');
+          });
+
+          const btnOk = document.createElement('button');
+          btnOk.className = 'btn btn-approve';
+          btnOk.textContent = 'ตกลง';
+          btnOk.addEventListener('click', (e)=>{
+            e.preventDefault();
+            updateStatus(n.id, 'confirmed');
+            row.remove();
+            if(!wrap.children.length) empty.classList.remove('d-none');
+          });
+
+          right.appendChild(btnCancel);
+          right.appendChild(btnOk);
+        } else {
+          const btnRestore = document.createElement('button');
+          btnRestore.className = 'btn btn-outline-secondary';
+          btnRestore.textContent = 'กู้คืน';
+          btnRestore.addEventListener('click', (e)=>{
+            e.preventDefault();
+            updateStatus(n.id, 'pending');
+            render();
+          });
+          right.appendChild(btnRestore);
+        }
+
+        row.appendChild(right);
+        wrap.appendChild(row);
+      });
+    }
+
+    filterEl.addEventListener('change', render);
+    render();
+  </script>
+</body>
+</html>
