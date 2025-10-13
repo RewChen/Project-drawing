@@ -1,11 +1,55 @@
-  :root{ --green:#2e7d32; --green-dark:#256628; --red:#a51212; --red-dark:#8f0f0f; }
-    body{ background:#f3f3f3; }
-    header{ padding:12px 0; }
-    .nav-shell{background:#fff;border-radius:14px;box-shadow:0 2px 8px rgba(0,0,0,.06);}
-    .brand-logo{width:56px;height:56px;border-radius:50%;object-fit:contain;}
-    .nav-list{list-style:none;display:flex;gap:28px;margin:0;padding:0;}
-    .nav-list a{text-decoration:none;color:#111;font-weight:700;}
-    .nav-list a:hover{opacity:.75;}
+ :root{
+      --brand-red:#a51212;
+      --glass-bg: rgba(255,255,255,.78);
+      --glass-brd: rgba(255,255,255,.55);
+    }
+
+
+    /* พื้นหลังเป็นภาพที่ให้มา */
+    body{
+      background: 
+        linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.55)),
+        url('/img/band.jpg') center / cover no-repeat fixed;
+         overflow-x: hidden;
+    }
+
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Sans Thai', sans-serif;
+}
+
+    .navbar {
+  width: 100%;
+  background: #fff;
+  padding: 10px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.navbar .logo {
+  width: 80px;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.navbar ul li a {
+
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+}
+
     main{padding:5vh 0}
     .glass-card{background:#fff;border-radius:1.25rem;box-shadow:0 12px 40px rgba(0,0,0,.1);max-width:980px;margin:auto;padding:2rem}
     .section-head{width:100%;text-align:center;background:#184b1b;color:#fff;border-radius:12px;padding:.6rem;font-weight:700;margin-bottom:1.25rem;}
