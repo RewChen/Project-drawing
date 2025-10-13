@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ฟอร์มกรอกข้อมูล</title>
+  <link rel="stylesheet" href="../css/data.css">
+  <link rel="icon" type="image/png" href="/img/logo.png">
+</head>
+<body>
+  <div class="navbar">
+    <img src="/img/logo.png" alt="logo" class="logo">
+    <ul>
+      <li><a href="#">เข้าสู่ระบบ</a></li>
+      <li><a href="#">หน้าหลัก</a></li>
+      <li><a href="#">แจ้งเตือน</a></li>
+      <li><a href="#">ติดต่อเรา</a></li>
+    </ul>
+  </div> 
+
+
+  <div class="background"></div>
+
+  <div class="form-container">
+    <h2>กรอกข้อมูล</h2>
+    <form id="infoForm">
+      <div class="form-row">
+        <input type="text" placeholder="กรอกชื่อ" required>
+        <input type="email" placeholder="กรอกอีเมล" required>
+      </div>
+      <div class="form-row">
+        <input type="tel" placeholder="กรอกเบอร์โทร" required>
+      </div>
+      <div class="button-row">
+        <button type="button" class="cancel">ยกเลิก</button>
+        <button type="submit" class="next">ถัดไป</button>
+      </div>
+    </form>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

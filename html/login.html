@@ -4,29 +4,27 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>เข้าสู่ระบบเจ้าของร้าน</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" type="image/png" href="/main/img/logo.png">
+  <link rel="stylesheet" href="/css/login.css">
+  <link rel="icon" type="image/png" href="/img/logo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
     
 </head>
 <body>
-  <nav>
-    <div class="logo">
-        <img src="/main/img/logo.png" alt="logo">
-    </div>
-
-        <ul class="menu">
-            <li><a href="">เข้าสู่ระบบ</a></li>
-            <li><a href="">หน้าหลัก</a></li>
-            <li><a href="">แจ้งเตือน</a></li>
-            <li><a href="">ติดต่อเรา</a></li>
-        </ul>
-    </nav>  
+  <div class="navbar">
+    <img src="/img/logo.png" alt="logo" class="logo">
+    <ul>
+      <li><a href="#">เข้าสู่ระบบ</a></li>
+      <li><a href="#">หน้าหลัก</a></li>
+      <li><a href="#">แจ้งเตือน</a></li>
+      <li><a href="#">ติดต่อเรา</a></li>
+    </ul>
+  </div> 
 
   <div class="container">
     <div class="card">
       <h2>เข้าสู่ระบบเจ้าของร้าน</h2>
       <div class="avatar">
-        <img src="/login/img/avatar.png" alt="">
+        <img src="/img/avatar.png" alt="">
       </div>
 
       <div class="form-group">
@@ -35,7 +33,7 @@
 
       <div class="form-group password-box">
         <input type="password" placeholder="รหัสผ่าน" id="password">
-        <span class="toggle-eye" onclick="togglePassword()">👁️</span>
+        
       </div>
 
       <button class="btn" onclick="login()">เข้าสู่ระบบ</button>

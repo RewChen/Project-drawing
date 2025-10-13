@@ -1,0 +1,113 @@
+ :root{
+      --brand-red:#a51212;
+      --glass-bg: rgba(255,255,255,.78);
+      --glass-brd: rgba(255,255,255,.55);
+    }
+
+
+    /* พื้นหลังเป็นภาพที่ให้มา */
+    body{
+      background: 
+        linear-gradient(0deg, rgba(0,0,0,.55), rgba(0,0,0,.55)),
+        url('/img/band.jpg') center / cover no-repeat fixed;
+         overflow-x: hidden;
+    }
+
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Noto Sans Thai', sans-serif;
+}
+
+/* Navbar */
+.navbar {
+  width: 100%;
+  background: #fff;
+  padding: 10px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.navbar .logo {
+  width: 80px;
+}
+
+.navbar ul {
+  list-style: none;
+  display: flex;
+  gap: 25px;
+}
+
+.navbar ul li a {
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+}
+
+    /* กล่องค้นหาแบบฟรอสต์แก้ว */
+    .glass-card{
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-brd);
+      border-radius: 1.25rem;           /* rounded-4 */
+      box-shadow: 0 10px 35px rgba(0,0,0,.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    /* ปุ่มแดง */
+    .btn-brand{
+      background-color: var(--brand-red);
+      border-color: var(--brand-red);
+    }
+    .btn-brand:hover, .btn-brand:focus{
+      background-color:#8f0f0f;
+      border-color:#8f0f0f;
+    }
+
+    /* ช่องกรอกให้ดูสะอาด */
+    .form-control{
+      border-radius: .75rem;
+    }
+
+    /* โลโก้วงกลมเล็กซ้ายบน (ถ้าไม่มีรูปจริง ใช้ตัวอักษรแทน) */
+    .logo-pill{
+      width: 46px; height: 46px;
+      border-radius: 50%;
+      display: grid; place-items: center;
+      font-weight: 700; letter-spacing:.5px;
+      background:#000; color:#ffd54d;
+      box-shadow: 0 2px 8px rgba(0,0,0,.35);
+    }
+
+    /* ระยะห่างส่วนกลางให้ใกล้เคียงรูปตัวอย่าง */
+    main{
+      padding-top: min(7vh, 48px);
+      padding-bottom: min(7vh, 48px);
+    }
+
+    /* ปรับ label แบบไทยตามภาพ (มี "ชื่อ :") */
+    .thai-label{
+      font-weight:600; min-width: 3.5rem;
+    }
+
+    /* ทำให้การ์ดไม่ชิดขอบในจอเล็ก */
+    .search-wrap{
+      max-width: 980px;
+      height: 80vh;
+    }
+
+    /* โฟกัส input ชัดขึ้นบนพื้นหลังสีเข้ม */
+    .form-control:focus{
+      border-color:#7c4dff;
+      box-shadow: 0 0 0 .25rem rgba(124,77,255,.2);
+    }
+
+    /* ลิงก์ในเมนู */
+    .nav-link{ font-weight:600; }
+    .nav-link.active{ color:#000 !important; }
