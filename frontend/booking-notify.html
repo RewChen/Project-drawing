@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>แจ้งเตือนการจอง | Tong Eiw Café</title>
+  <link rel="icon" type="image/png" href="/img/logo.png">
+  <link rel="stylesheet" href="/css/manage.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Noto Sans Thai', sans-serif;
+      background: url('/img/band.jpg') center/cover no-repeat;
+      color: #fff;
+    }
+    .navbar {
+      background: #fff;
+      color: #111;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 30px;
+    }
+    .navbar .logo { width: 70px; }
+    .navbar ul {
+      list-style: none;
+      display: flex;
+      gap: 24px;
+      margin: 0;
+      padding: 0;
+    }
+    .navbar a {
+      text-decoration: none;
+      color: #111;
+      font-weight: 600;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 80px 20px;
+    }
+    .notify-box {
+      background: #fff;
+      color: #111;
+      border-radius: 20px;
+      width: min(700px, 90vw);
+      padding: 30px 40px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      position: relative;
+      z-index: 2;
+    }
+    .notify-title {
+      text-align: center;
+      font-weight: 700;
+      font-size: 20px;
+      background: #124d2d;
+      color: #fff;
+      border-radius: 20px;
+      padding: 6px 20px;
+      display: inline-block;
+      position: absolute;
+      top: -20px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .notify-list {
+      margin-top: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .notify-item {
+      background: #f3f3f3;
+      border-radius: 15px;
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .notify-item .info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      font-size: 16px;
+      color: #333;
+    }
+    .notify-item button {
+      border: none;
+      border-radius: 12px;
+      padding: 6px 14px;
+      color: #fff;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .cancel-btn { background: #971212; }
+    .status-btn { background: #124d2d; }
+
+    /* ✅ Popup */
+    .popup {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.65);
+      visibility: hidden;
+      opacity: 0;
+      transition: 0.25s ease;
+      z-index: 9998;
+    }
+    .popup.active {
+      visibility: visible;
+      opacity: 1;
+    }
+    .popup-box {
+      background: #fff;
+      color: #111;
+      border-radius: 20px;
+      padding: 30px 40px;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      text-align: center;
+      z-index: 9999;
+    }
+    .popup-box h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: #444;
+      margin-bottom: 20px;
+    }
+    .popup-box button {
+      background: #124d2d;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 20px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <div class="navbar">
+    <img src="/img/logo.png" alt="logo" class="logo">
+    <ul>
+      <li><a href="/login.html">เข้าสู่ระบบ</a></li>
+      <li><a href="/main.html">หน้าหลัก</a></li>
+      <li><a href="/booking-notify.html" style="color:#124d2d;">แจ้งเตือน</a></li>
+      <li><a href="#">ติดต่อเรา</a></li>
+    </ul>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="notify-box">
+      <div class="notify-title">แจ้งเตือนการจอง</div>
+      <div class="notify-list" id="notifyList">
+        <p style="color:#666;text-align:center;">กำลังโหลดข้อมูล...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup -->
+  <div class="popup" id="popup">
+    <div class="popup-box">
+      <h3 id="popupMsg">...</h3>
+      <button onclick="closePopup()">ตกลง</button>
+    </div>
+  </div>
+
+  <script>
+    const notifyList = document.getElementById('notifyList');
+    const popup = document.getElementById('popup');
+    const popupMsg = document.getElementById('popupMsg');
+
+    function openPopup(msg) {
+      popupMsg.textContent = msg;
+      popup.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+    function closePopup() {
+      popup.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    // โหลดรายการจาก server
+    async function loadReservations() {
+      const res = await fetch('/api/reservations');
+      const data = await res.json();
+      renderList(data);
+    }
+
+    function renderList(list) {
+      notifyList.innerHTML = '';
+      if (!list.length) {
+        notifyList.innerHTML = '<p style="color:#666;text-align:center;">ไม่มีรายการจองในระบบ</p>';
+        return;
+      }
+      list.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'notify-item';
+        div.innerHTML = `
+          <div class="info">
+            <strong>โต๊ะ ${item.table}</strong>
+            <small>ชื่อ: ${item.name}</small>
+            <small>สถานะ: ${item.status}</small>
+          </div>
+          <div class="actions">
+            <button class="status-btn" onclick="showStatus('${item.status}')">ดูสถานะ</button>
+            <button class="cancel-btn" onclick="cancelReservation('${item.id}', this)">ยกเลิก</button>
+          </div>
+        `;
+        notifyList.appendChild(div);
+      });
+    }
+
+    function showStatus(status) {
+      let msg = '';
+      if (status === 'pending') msg = 'สถานะ: กำลังดำเนินการ';
+      else if (status === 'confirmed') msg = 'สถานะ: ยืนยันการจองแล้ว';
+      else if (status === 'canceled') msg = 'สถานะ: ถูกยกเลิก';
+      openPopup(msg);
+    }
+
+    async function cancelReservation(id, btn) {
+      const reason = prompt('กรุณาระบุเหตุผลการยกเลิก:');
+      if (!reason) return;
+      const res = await fetch(`/api/reservations/${id}/cancel`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reason })
+      });
+      if (res.ok) {
+        openPopup('ยกเลิกการจองสำเร็จ!');
+        btn.closest('.notify-item').remove(); // ✅ ลบรายการออกจากหน้า
+      }
+    }
+
+    loadReservations();
+  </script>
+
+</body>
+</html>
