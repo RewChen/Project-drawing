@@ -15,6 +15,7 @@ This project is part of the Database course. It is a website for booking tables 
 - CSS <img src="https://upload.wikimedia.org/wikipedia/commons/d/d5/CSS3_logo_and_wordmark.svg" width="20">
 - JAVASCRIPT <img src="https://upload.wikimedia.org/wikipedia/commons/6/6a/JavaScript-logo.png" width="20">
 - BOOTSTRAP <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Bootstrap_logo.svg/1200px-Bootstrap_logo.svg.png" width="20">
+- Node js <img src="https://www.borntodev.com/wp-content/uploads/2023/03/%E0%B8%94%E0%B8%B5%E0%B9%84%E0%B8%8B%E0%B8%99%E0%B9%8C%E0%B8%97%E0%B8%B5%E0%B9%88%E0%B9%84%E0%B8%A1%E0%B9%88%E0%B8%A1%E0%B8%B5%E0%B8%8A%E0%B8%B7%E0%B9%88%E0%B8%AD-8.png" width="20">
 # Team Job position (ตำแหน่งงานของทีม)
 | Student ID | Name | Position |
 |----------|----------|----------|
