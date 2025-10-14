@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>อัปเดตสถานะโต๊ะ</title>
+  <link rel="icon" type="image/png" href="/img/logo.png" />
+  <link rel="stylesheet" href="/css/status-update.css">
+</head>
+<body>
+
+   
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <img src="logo.png" alt="Tong-Biw Logo">
+    </div>
+    <nav>
+      <a href="#" class="profile-icon">
+        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" />
+      </a>
+      <a href="#">หน้าหลัก</a>
+      <a href="#">แจ้งเตือน</a>
+      <a href="#">ติดต่อเรา</a>
+    </nav>
+  </header>
+
+  <!-- Main -->
+  <main>
+    <div class="card">
+      <h2>อัปเดตสถานะโต๊ะ</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>โต๊ะที่</th>
+            <th>สถานะ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>โต๊ะ 1</td>
+            <td>
+              <div class="btn-group">
+                <button class="available" onclick="setStatus(this)">ว่าง</button>
+                <button class="unavailable" onclick="setStatus(this)">ไม่ว่าง</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>โต๊ะ 2</td>
+            <td>
+              <div class="btn-group">
+                <button class="available" onclick="setStatus(this)">ว่าง</button>
+                <button class="unavailable" onclick="setStatus(this)">ไม่ว่าง</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>โต๊ะ 3</td>
+            <td>
+              <div class="btn-group">
+                <button class="available" onclick="setStatus(this)">ว่าง</button>
+                <button class="unavailable" onclick="setStatus(this)">ไม่ว่าง</button>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>โต๊ะ 4</td>
+            <td>
+              <div class="btn-group">
+                <button class="available" onclick="setStatus(this)">ว่าง</button>
+                <button class="unavailable" onclick="setStatus(this)">ไม่ว่าง</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    function setStatus(button) {
+  const row = button.closest('tr');
+  const buttons = row.querySelectorAll('button');
+  
+  buttons.forEach(btn => btn.classList.remove('active'));
+  button.classList.add('active');
+}
+
+  </script>
+</body>
+</html>

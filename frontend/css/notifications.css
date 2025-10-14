@@ -1,4 +1,6 @@
- :root{
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap');
+
+:root{
       --brand-red:#a51212;
       --glass-bg: rgba(255,255,255,.78);
       --glass-brd: rgba(255,255,255,.55);
@@ -14,8 +16,6 @@
     }
 
 
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap');
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -23,6 +23,8 @@
   font-family: 'Noto Sans Thai', sans-serif;
 }
 
+
+ 
 .navbar {
   width: 100%;
   background: #fff;
