@@ -10,82 +10,96 @@
 <body>
 
    
-  <!-- Header -->
-  <header>
-    <div class="logo">
-      <img src="logo.png" alt="Tong-Biw Logo">
+    <header class="navbar">
+    <div class="nav-left">
+      <img src="/img/logo.png" alt="Tong-Eiw Logo" class="logo">
     </div>
-    <nav>
-      <a href="#" class="profile-icon">
-        <img src="https://cdn-icons-png.flaticon.com/512/847/847969.png" alt="User" />
-      </a>
-      <a href="#">หน้าหลัก</a>
-      <a href="#">แจ้งเตือน</a>
-      <a href="#">ติดต่อเรา</a>
-    </nav>
+    <div class="nav-right">
+      <div class="profile-dot" aria-hidden="true"></div>
+      <nav class="menu">
+        <a href="/main.html">หน้าหลัก</a>
+        <a href="/notifications.html">แจ้งเตือน</a>
+        <a href="/contact.html">ติดต่อเรา</a>
+      </nav>
+    </div>
   </header>
 
-  <!-- Main -->
-  <main>
-    <div class="card">
-      <h2>อัปเดตสถานะโต๊ะ</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>โต๊ะที่</th>
-            <th>สถานะ</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>โต๊ะ 1</td>
-            <td>
-              <div class="btn-group">
-                <button class="available" onclick="setStatus(this)">ว่าง</button>
-                <button class="unavailable" onclick="setStatus(this)">ไม่ว่าง</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>โต๊ะ 2</td>
-            <td>
-              <div class="btn-group">
-                <button class="available" onclick="setStatus(this)">ว่าง</button>
-                <button class="unavailable" onclick="setStatus(this)">ไม่ว่าง</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>โต๊ะ 3</td>
-            <td>
-              <div class="btn-group">
-                <button class="available" onclick="setStatus(this)">ว่าง</button>
-                <button class="unavailable" onclick="setStatus(this)">ไม่ว่าง</button>
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <td>โต๊ะ 4</td>
-            <td>
-              <div class="btn-group">
-                <button class="available" onclick="setStatus(this)">ว่าง</button>
-                <button class="unavailable" onclick="setStatus(this)">ไม่ว่าง</button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+  <!-- Background -->
+  <div class="bg"></div>
+
+  <!-- Card -->
+  <main class="wrap">
+    <section class="card">
+      <h2 class="card-title">อัปเดตสถานะโต๊ะ</h2>
+
+      <div class="grid">
+        <!-- LEFT: โต๊ะที่ -->
+        <div class="col-left">
+          <div class="col-header">โต๊ะที่</div>
+          <hr class="col-sep">
+
+          <div class="row">โต๊ะ 1</div>
+          <div class="row">โต๊ะ 2</div>
+          <div class="row">โต๊ะ 3</div>
+          <div class="row">โต๊ะ 4</div>
+        </div>
+
+        <!-- DIVIDER -->
+        <div class="divider" aria-hidden="true"></div>
+
+        <!-- RIGHT: สถานะ -->
+        <div class="col-right">
+          <div class="col-header center">สถานะ</div>
+          <hr class="col-sep">
+
+          <div class="row right">
+            <div class="btn-group">
+              <button class="btn btn-free" data-state="free">ว่าง</button>
+              <button class="btn btn-busy" data-state="busy">ไม่ว่าง</button>
+            </div>
+          </div>
+
+          <div class="row right">
+            <div class="btn-group">
+              <button class="btn btn-free" data-state="free">ว่าง</button>
+              <button class="btn btn-busy" data-state="busy">ไม่ว่าง</button>
+            </div>
+          </div>
+
+          <div class="row right">
+            <div class="btn-group">
+              <button class="btn btn-free" data-state="free">ว่าง</button>
+              <button class="btn btn-busy" data-state="busy">ไม่ว่าง</button>
+            </div>
+          </div>
+
+          <div class="row right">
+            <div class="btn-group">
+              <button class="btn btn-free" data-state="free">ว่าง</button>
+              <button class="btn btn-busy" data-state="busy">ไม่ว่าง</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script>
-    function setStatus(button) {
-  const row = button.closest('tr');
-  const buttons = row.querySelectorAll('button');
-  
-  buttons.forEach(btn => btn.classList.remove('active'));
-  button.classList.add('active');
-}
+
+document.querySelectorAll('.row.right').forEach(row => {
+  row.addEventListener('click', e => {
+    const btn = e.target.closest('.btn');
+    if (!btn) return;
+
+ 
+    row.querySelectorAll('.btn').forEach(b => b.classList.remove('is-on'));
+    btn.classList.add('is-on');
+
+  });
+});
+
+
+
 
   </script>
 </body>

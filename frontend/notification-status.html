@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tong-Eiw Cafe • การแจ้งเตือน</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/notification-status.css"/>
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="nav-left">
+      <a href="index.html" class="logo-link">
+        <img src="logo.png" alt="Tong-Eiw Logo" class="logo">
+      </a>
+    </div>
+    <nav class="menu">
+      <a href="index.html">หน้าหลัก</a>
+      <a class="active" href="notifications.html">แจ้งเตือน</a>
+      <a href="#">ติดต่อเรา</a>
+    </nav>
+    <div class="nav-right">
+      <!-- โปรไฟล์แบบวงกลมเหมือนหน้าแรก (เปลี่ยนภายหลังได้) -->
+      <div class="profile-dot" aria-hidden="true"></div>
+    </div>
+  </header>
+
+  <!-- BG -->
+  <div class="bg"></div>
+
+  <!-- Content -->
+  <main class="wrap">
+    <section class="card">
+      <div class="section-title">
+        <button class="title-chip">การแจ้งเตือน</button>
+      </div>
+
+      <h4 class="group-title">รายการจอง</h4>
+
+      <!-- รายการแจ้งเตือน -->
+      <div id="notif-list" class="list">
+        <article class="item">
+          <div class="icon">
+            <!-- กระดิ่งสีแดง -->
+            <svg viewBox="0 0 24 24" width="38" height="38">
+              <path fill="#b31212"
+                d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm6-6V11a6 6 0 0 0-5-5.92V4a1 1 0 1 0-2 0v1.08A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2Z"/>
+            </svg>
+          </div>
+          <div class="text">
+            <div class="title">รอดำเนินการ</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-confirm">ตกลง</button>
+          </div>
+        </article>
+
+        <article class="item">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" width="38" height="38">
+              <path fill="#b31212"
+                d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm6-6V11a6 6 0 0 0-5-5.92V4a1 1 0 1 0-2 0v1.08A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2Z"/>
+            </svg>
+          </div>
+          <div class="text">
+            <div class="title">รอดำเนินการ</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-confirm">ตกลง</button>
+          </div>
+        </article>
+
+        <article class="item">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" width="38" height="38">
+              <path fill="#b31212"
+                d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm6-6V11a6 6 0 0 0-5-5.92V4a1 1 0 1 0-2 0v1.08A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2Z"/>
+            </svg>
+          </div>
+          <div class="text">
+            <div class="title">รอดำเนินการ</div>
+          </div>
+          <div class="actions">
+            <button class="btn btn-confirm">ตกลง</button>
+          </div>
+        </article>
+      </div>
+
+      <!-- กลุ่มถัดไป -->
+      <h4 class="group-title">อัปเดตสถานะโต๊ะ:</h4>
+      <div class="list">
+        <article class="item">
+          <div class="icon">
+            <svg viewBox="0 0 24 24" width="38" height="38">
+              <path fill="#b31212"
+                d="M12 22a2.5 2.5 0 0 0 2.45-2h-4.9A2.5 2.5 0 0 0 12 22Zm6-6V11a6 6 0 0 0-5-5.92V4a1 1 0 1 0-2 0v1.08A6 6 0 0 0 6 11v5l-2 2v1h16v-1l-2-2Z"/>
+            </svg>
+          </div>
+          <div class="text">
+            <div class="title">อัปเดตสถานะโต๊ะ 1 สำเร็จ</div>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // ปุ่ม “ตกลง” กดแล้วลบรายการแบบนิ่ม ๆ (ไม่เปลี่ยนสีพื้นหลัง)
+    document.querySelectorAll('.btn-confirm').forEach(btn=>{
+      btn.addEventListener('click', e=>{
+        const card = e.target.closest('.item');
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(-2px)';
+        setTimeout(()=> card.remove(), 140);
+      });
+    });
+  </script>
+</body>
+</html>
