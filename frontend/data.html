@@ -103,90 +103,73 @@
     </div>
   </div>
 
-  <script>
-    // อ่านค่าจาก localStorage
-    const table = localStorage.getItem("selectedTable") || "";
-    const storedDate = localStorage.getItem("reservationDate") || "";
+<script defer src="/js/api.js"></script>
 
-    if (!table) {
-      alert("กรุณาเลือกโต๊ะก่อน");
-      location.href = "/reserve.html";
+<script>
+  // เติมค่าเริ่มต้นจากหน้าก่อนหน้า (ถ้าบันทึกไว้)
+  document.addEventListener('DOMContentLoaded', () => {
+    const table = localStorage.getItem('reservationTable');
+    const date  = localStorage.getItem('reservationDate');
+    if (table && document.getElementById('table')) {
+      document.getElementById('table').value = table;
+    }
+    if (date && document.getElementById('date')) {
+      document.getElementById('date').value = date;
+    }
+  });
+
+  // ---- ผูกกับฟอร์ม/ปุ่มยืนยัน ----
+  // แนะนำให้ห่ออินพุตด้วย <form id="reserveForm"> ... </form>
+  // และปุ่มยืนยันเป็น type="submit"
+  const form = document.getElementById('reserveForm') || document.querySelector('form');
+  const confirmBtn = document.getElementById('confirmBtn') || document.querySelector('#confirmBtn, [data-confirm]');
+
+  // ถ้ามีฟอร์ม -> ใช้ submit; ถ้าไม่มี -> ใช้คลิกปุ่ม
+  if (form) {
+    form.addEventListener('submit', handleSubmit);
+  } else if (confirmBtn) {
+    confirmBtn.addEventListener('click', handleSubmit);
+  }
+
+  async function handleSubmit(e){
+    if (e) e.preventDefault();
+
+    const get = id => document.getElementById(id)?.value?.trim() || "";
+    const payload = {
+      table: get('table') || localStorage.getItem('reservationTable') || "1",
+      name : get('name')  || get('custName')  || "",       // รองรับ id ที่ต่างกัน
+      phone: get('phone') || get('custPhone') || "",
+      email: get('email') || "",
+      date : get('date')  || localStorage.getItem('reservationDate') || ""
+    };
+
+    // ตรวจค่าจำเป็น
+    if (!payload.name || !payload.phone || !payload.date) {
+      alert('กรุณากรอกชื่อ เบอร์โทร และวันที่ให้ครบ');
+      return;
     }
 
-    const displayTable = document.getElementById("displayTable");
-    const displayDate  = document.getElementById("displayDate");
-    const dateInput    = document.getElementById("date");
-
-    displayTable.textContent = table ? `โต๊ะ ${table}` : "ยังไม่ได้เลือกโต๊ะ";
-
-    if (storedDate) {
-      displayDate.textContent = storedDate;
-      dateInput.value = storedDate;
-    } else {
-      const t = new Date();
-      const pad = n => String(n).padStart(2, "0");
-      const iso = `${t.getFullYear()}-${pad(t.getMonth()+1)}-${pad(t.getDate())}`;
-      dateInput.value = iso;
-      displayDate.textContent = iso;
+    // กันกดย้ำ
+    if (confirmBtn) {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'กำลังบันทึก...';
     }
 
-    document.getElementById("backBtn").addEventListener("click", () => history.back());
-
-    const form = document.getElementById("reserveForm");
-    const err  = document.getElementById("errorMsg");
-
-    form.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      err.textContent = "";
-
-      const name  = document.getElementById("name").value.trim();
-      const phone = document.getElementById("phone").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const date  = document.getElementById("date").value;
-
-      if (!name || !phone || !date) {
-        err.textContent = "กรุณากรอกชื่อ, เบอร์โทร และวันที่ ให้ครบ";
-        return;
+    try {
+      const { newItem } = await API.create(payload);   // เรียก backend จริง
+      localStorage.setItem('lastReservationId', newItem.id);
+      // ไปหน้าถัดไป
+      window.location.href = '/booking-notify.html?id=' + encodeURIComponent(newItem.id);
+    } catch (err) {
+      alert('บันทึกไม่สำเร็จ: ' + err.message);
+      console.error(err);
+    } finally {
+      if (confirmBtn) {
+        confirmBtn.disabled = false;
+        confirmBtn.textContent = 'ยืนยันจอง';
       }
-
-      const phonePattern = /^0[0-9]{8,9}$/;
-      if (!phonePattern.test(phone)) {
-        err.textContent = "รูปแบบเบอร์ไม่ถูกต้อง (ตัวอย่าง: 0812345678)";
-        return;
-      }
-
-      try {
-        const res = await fetch("/api/reservations", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            table,
-            name,
-            phone,
-            email,
-            date
-          })
-        });
-
-        if (!res.ok) throw new Error("ไม่สามารถบันทึกข้อมูลได้");
-
-        const data = await res.json();
-        const newId = data?.newItem?.id;
-
-        if (newId) {
-          localStorage.setItem("lastReservationId", newId);
-          alert("✅ การจองสำเร็จ!");
-          // 👉 เปลี่ยนให้ไปหน้า reservation-info.html
-          window.location.href = `/reservation-info.html?id=${newId}`;
-        } else {
-          throw new Error("ไม่ได้รับ ID จากระบบ");
-        }
-
-      } catch (e) {
-        console.error(e);
-        err.textContent = "เกิดข้อผิดพลาดในการบันทึก กรุณาลองใหม่อีกครั้ง";
-      }
-    });
-  </script>
+    }
+  }
+</script>
 </body>
 </html>

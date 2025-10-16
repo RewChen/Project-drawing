@@ -21,10 +21,6 @@
     .glass-card{background:#fff;border-radius:1.25rem;box-shadow:0 12px 40px rgba(0,0,0,.1);max-width:820px;margin:auto;padding:2rem}
     .section-head{width:100%;text-align:center;background:#184b1b;color:#fff;border-radius:12px;padding:.6rem;font-weight:700;margin-bottom:1.25rem;}
     .section-head.red{background:#6f1d1b}
-    .btn-success-brand{background:var(--green);border-color:var(--green);color:#fff;}
-    .btn-success-brand:hover{background:var(--green-dark);border-color:var(--green-dark);}
-    .btn-danger-brand{background:var(--red);border-color:var(--red);color:#fff;}
-    .btn-danger-brand:hover{background:var(--red-dark);border-color:var(--red-dark);}
     .field{white-space:pre-line;font-size:1.06rem}
   </style>
 </head>
@@ -51,87 +47,34 @@
   <main>
     <div class="glass-card">
       <div id="head" class="section-head">รายละเอียดการจอง</div>
-
       <div id="detail" class="field mb-4">กำลังโหลด…</div>
 
-      <!-- กล่องยกเลิก -->
-      <div id="cancelBox" class="mb-4 d-none">
-        <div class="section-head red mb-3">ยกเลิกการจอง</div>
-        <label for="reason" class="form-label">ระบุเหตุผล</label>
-        <textarea id="reason" class="form-control" rows="3" placeholder="เปลี่ยนใจ / เอกสารไม่ครบ / ..."></textarea>
-      </div>
-
-      <div class="d-flex justify-content-between gap-2">
-        <div class="d-flex gap-2">
-          <button id="btnCancel" class="btn btn-danger-brand rounded-3 px-4">ยกเลิก</button>
-          <button id="btnRestore" class="btn btn-outline-secondary rounded-3 px-4 d-none">กู้คืน</button>
-        </div>
-        <button id="btnOK" class="btn btn-success-brand rounded-3 px-4">ตกลง</button>
-      </div>
-
+      <!-- ปุ่มทั้งหมดถูกลบออก -->
       <div class="text-center mt-3">
-        <a href="/notifications.html" class="small text-decoration-none">กลับไปหน้าการแจ้งเตือน</a>
+        <a href="/manage.html" class="small text-decoration-none">← กลับไปหน้าค้นหา</a>
       </div>
     </div>
   </main>
 
-  <script>
-    const q = new URLSearchParams(location.search);
-    const id = q.get("id");
-
-    const $ = (s)=>document.querySelector(s);
-    const head = $("#head");
-    const detail = $("#detail");
-    const cancelBox = $("#cancelBox");
-    const btnCancel = $("#btnCancel");
-    const btnOK = $("#btnOK");
-    const btnRestore = $("#btnRestore");
-    let data = null;
-    let cancelMode = false;
-
-    async function load(){
-      const res = await fetch(`/api/reservations/${encodeURIComponent(id)}`);
-      if(!res.ok){ detail.textContent="ไม่พบข้อมูล"; btnCancel.disabled=true; btnOK.disabled=true; return; }
-      data = await res.json();
-      detail.textContent =
-`โต๊ะ: ${data.table}
-วันที่: ${data.date}
-ชื่อ: ${data.name}
-อีเมล: ${data.email || "-"}
-เบอร์: ${data.phone}
-สถานะ: ${data.status}`;
-      if(data.status!=="pending") btnRestore.classList.remove("d-none");
-    }
-
-    async function confirm(){
-      await fetch(`/api/reservations/${encodeURIComponent(id)}/confirm`, {method:"POST"});
-      location.href = "/notifications.html";
-    }
-    async function cancel(){
-      if(!cancelMode){
-        cancelMode = true;
-        cancelBox.classList.remove("d-none");
-        head.textContent = "ยกเลิกการจอง";
-        head.classList.add("red");
-        return;
-      }
-      const reason = ($("#reason").value || "").trim();
-      await fetch(`/api/reservations/${encodeURIComponent(id)}/cancel`, {
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body: JSON.stringify({ reason })
-      });
-      location.href = "/notifications.html";
-    }
-    async function restore(){
-      await fetch(`/api/reservations/${encodeURIComponent(id)}/restore`, {method:"POST"});
-      location.href = "/notifications.html";
-    }
-
-    document.addEventListener("DOMContentLoaded", load);
-    btnOK.addEventListener("click", confirm);
-    btnCancel.addEventListener("click", cancel);
-    btnRestore.addEventListener("click", restore);
+  <script defer src="/js/api.js"></script>
+<script>
+const q = new URLSearchParams(location.search);
+const id = q.get("id");
+const detail = document.getElementById("detail");
+document.addEventListener("DOMContentLoaded", async ()=>{
+  try{
+    const r = await API.get(id);
+    detail.textContent =
+`โต๊ะ: ${r.table}
+วันที่: ${r.date}
+ชื่อ: ${r.name}
+อีเมล: ${r.email || "-"}
+เบอร์: ${r.phone}
+สถานะ: ${API.statusText(r.status)}`;
+  }catch(err){
+    detail.textContent = "❌ " + err.message;
+  }
+});
   </script>
 </body>
 </html>

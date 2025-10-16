@@ -104,16 +104,20 @@
     </section>
   </main>
 
-  <script>
-    // ปุ่ม “ตกลง” กดแล้วลบรายการแบบนิ่ม ๆ (ไม่เปลี่ยนสีพื้นหลัง)
-    document.querySelectorAll('.btn-confirm').forEach(btn=>{
-      btn.addEventListener('click', e=>{
-        const card = e.target.closest('.item');
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(-2px)';
-        setTimeout(()=> card.remove(), 140);
-      });
-    });
-  </script>
+  <script defer src="/js/api.js"></script>
+<script>
+const wrap = document.getElementById('statusList'); // container
+async function load(){
+  try{
+    const items = await API.list({ status:'pending', sort:'desc' });
+    wrap.innerHTML = items.map(r => `
+      <div class="notif-item">
+        <div>โต๊ะ ${r.table} — ${r.name} — ${r.date}</div>
+        <div class="small text-secondary">${r.id}</div>
+      </div>`).join('') || `<div class="alert alert-light">ไม่มีรายการค้าง</div>`;
+  }catch(e){ wrap.innerHTML = `<div class="alert alert-danger">โหลดข้อมูลไม่สำเร็จ</div>`; }
+}
+document.addEventListener('DOMContentLoaded', load);
+</script>
 </body>
 </html>

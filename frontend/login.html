@@ -7,15 +7,14 @@
   <link rel="stylesheet" href="/css/login.css">
   <link rel="icon" type="image/png" href="/img/logo.png">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&display=swap" rel="stylesheet">
-    
 </head>
 <body>
   <div class="navbar">
     <img src="/img/logo.png" alt="logo" class="logo">
     <ul>
       <li><a href="#">เข้าสู่ระบบ</a></li>
-      <li><a href="#">หน้าหลัก</a></li>
-      <li><a href="#">แจ้งเตือน</a></li>
+      <li><a href="/main.html">หน้าหลัก</a></li>
+      <li><a href="/notifications.html">แจ้งเตือน</a></li>
       <li><a href="#">ติดต่อเรา</a></li>
     </ul>
   </div> 
@@ -33,7 +32,6 @@
 
       <div class="form-group password-box">
         <input type="password" placeholder="รหัสผ่าน" id="password">
-        
       </div>
 
       <button class="btn" onclick="login()">เข้าสู่ระบบ</button>
@@ -41,24 +39,59 @@
   </div>
 
   <script>
-    function togglePassword(){
-      const passInput = document.getElementById('password');
-      if(passInput.type === 'password'){
-        passInput.type = 'text';
-      } else {
-        passInput.type = 'password';
-      }
+  // ถ้าล็อกอินแล้ว ส่งไปหน้าหลังบ้านทันที
+  const exists = localStorage.getItem("authUser");
+  if (exists) window.location.href = "/notifications.html";
+
+  // เจ้าของร้าน (แก้ค่าด้านล่างได้)
+  const OWNER = { user: "TongEiw", pass: "1234" };
+
+  // จัดการ submit แบบฟอร์ม
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.createElement("form");
+    form.id = "loginForm";
+    form.style.display = "contents";           // ให้ไม่เสีย layout เดิม
+
+    const card = document.querySelector(".card");
+    const btn  = card.querySelector(".btn");
+    const name = document.getElementById("shopName");
+    const pass = document.getElementById("password");
+
+    // ครอบ input + ปุ่มไว้ใน form เพื่อรองรับการกด Enter
+    const elems = [name.parentElement, pass.parentElement, btn];
+    elems.forEach(el => form.appendChild(el));
+    card.appendChild(form);
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      login();
+    });
+
+    btn.onclick = () => form.requestSubmit();
+  });
+
+  function login(){
+    const shopName = document.getElementById('shopName').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!shopName || !password) {
+      alert('กรุณากรอกชื่อร้านและรหัสผ่าน');
+      return;
     }
 
-    function login(){
-      const shopName = document.getElementById('shopName').value;
-      const password = document.getElementById('password').value;
-      if(shopName && password){
-        alert('เข้าสู่ระบบ: ' + shopName);
-      } else {
-        alert('กรุณากรอกชื่อร้านและรหัสผ่าน');
-      }
+    // ✅ อนุญาตเฉพาะเจ้าของร้าน
+    if (shopName === OWNER.user && password === OWNER.pass) {
+      localStorage.setItem("authUser", JSON.stringify({
+        role: "owner",
+        shopName,
+        loginAt: new Date().toISOString()
+      }));
+      alert("เข้าสู่ระบบสำเร็จ!");
+      window.location.href = "/notifications.html";
+    } else {
+      alert("ชื่อร้านหรือรหัสผ่านไม่ถูกต้อง (เฉพาะเจ้าของร้านเท่านั้น)");
     }
-  </script>
+  }
+</script>
 </body>
 </html>

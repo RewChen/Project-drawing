@@ -138,6 +138,7 @@
       padding: 8px 20px;
       cursor: pointer;
       font-weight: 600;
+      
     }
   </style>
 </head>
@@ -172,76 +173,58 @@
     </div>
   </div>
 
-  <script>
-    const notifyList = document.getElementById('notifyList');
-    const popup = document.getElementById('popup');
-    const popupMsg = document.getElementById('popupMsg');
+  <script defer src="/js/api.js"></script>
 
-    function openPopup(msg) {
-      popupMsg.textContent = msg;
-      popup.classList.add('active');
-      document.body.style.overflow = 'hidden';
-    }
-    function closePopup() {
-      popup.classList.remove('active');
-      document.body.style.overflow = '';
-    }
+<script>
+  // ใช้กล่องเดิมในหน้า
+  const listEl = document.getElementById('notifyList');
 
-    // โหลดรายการจาก server
-    async function loadReservations() {
-      const res = await fetch('/api/reservations');
-      const data = await res.json();
-      renderList(data);
-    }
+  async function loadBooking() {
+    try {
+      const p  = new URLSearchParams(location.search);
+      const id = p.get('id') || localStorage.getItem('lastReservationId');
+      if (!id) throw new Error('ไม่พบหมายเลขการจอง (id)');
 
-    function renderList(list) {
-      notifyList.innerHTML = '';
-      if (!list.length) {
-        notifyList.innerHTML = '<p style="color:#666;text-align:center;">ไม่มีรายการจองในระบบ</p>';
-        return;
+      listEl.innerHTML = `<p style="color:#666;text-align:center;">กำลังโหลดข้อมูล… (id = ${id})</p>`;
+
+      const res = await fetch(`/api/reservations/${encodeURIComponent(id)}`);
+      if (!res.ok) {
+        const txt = await res.text().catch(()=> '');
+        throw new Error(`โหลดข้อมูลไม่สำเร็จ (${res.status}) ${txt}`);
       }
-      list.forEach(item => {
-        const div = document.createElement('div');
-        div.className = 'notify-item';
-        div.innerHTML = `
+      const r = await res.json();
+
+      // แสดงรายละเอียดในกล่องเดิม
+      listEl.innerHTML = `
+        <div class="notify-item" style="flex-direction:column;align-items:flex-start;gap:6px">
           <div class="info">
-            <strong>โต๊ะ ${item.table}</strong>
-            <small>ชื่อ: ${item.name}</small>
-            <small>สถานะ: ${item.status}</small>
+            <div><b>หมายเลข:</b> ${r.id}</div>
+            <div><b>โต๊ะ:</b> ${r.table}</div>
+            <div><b>วันที่:</b> ${r.date}</div>
+            <div><b>ชื่อ:</b> ${r.name}</div>
+            <div><b>อีเมล:</b> ${r.email || '-'}</div>
+            <div><b>เบอร์:</b> ${r.phone}</div>
+            <div><b>สถานะ:</b> ${r.status === 'pending' ? 'รอดำเนินการ' : (r.status === 'confirmed' ? 'ยืนยันแล้ว' : 'ยกเลิกแล้ว')}</div>
           </div>
-          <div class="actions">
-            <button class="status-btn" onclick="showStatus('${item.status}')">ดูสถานะ</button>
-            <button class="cancel-btn" onclick="cancelReservation('${item.id}', this)">ยกเลิก</button>
+          <div style="display:flex;gap:10px;margin-top:10px;align-self:center">
+            <a class="status-btn" style="text-decoration:none;padding:8px 16px;border-radius:10px" href="/notifications.html">ไปหน้าแจ้งเตือน</a>
+            <a class="cancel-btn" style="text-decoration:none;padding:8px 16px;border-radius:10px;background:#ddd;color:#333" href="/reservation-detail.html?id=${encodeURIComponent(r.id)}">รายละเอียด</a>
           </div>
-        `;
-        notifyList.appendChild(div);
-      });
+        </div>
+      `;
+    } catch (err) {
+      console.error(err);
+      listEl.innerHTML = `
+        <div class="notify-item" style="background:#ffecec;border:1px solid #f5b5b5;color:#a31212">
+          โหลดข้อมูลไม่สำเร็จ: ${err.message}
+        </div>
+      `;
     }
+  }
 
-    function showStatus(status) {
-      let msg = '';
-      if (status === 'pending') msg = 'สถานะ: กำลังดำเนินการ';
-      else if (status === 'confirmed') msg = 'สถานะ: ยืนยันการจองแล้ว';
-      else if (status === 'canceled') msg = 'สถานะ: ถูกยกเลิก';
-      openPopup(msg);
-    }
+  document.addEventListener('DOMContentLoaded', loadBooking);
+</script>
 
-    async function cancelReservation(id, btn) {
-      const reason = prompt('กรุณาระบุเหตุผลการยกเลิก:');
-      if (!reason) return;
-      const res = await fetch(`/api/reservations/${id}/cancel`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reason })
-      });
-      if (res.ok) {
-        openPopup('ยกเลิกการจองสำเร็จ!');
-        btn.closest('.notify-item').remove(); // ✅ ลบรายการออกจากหน้า
-      }
-    }
-
-    loadReservations();
-  </script>
 
 </body>
 </html>

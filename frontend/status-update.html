@@ -8,9 +8,7 @@
   <link rel="stylesheet" href="/css/status-update.css">
 </head>
 <body>
-
-   
-    <header class="navbar">
+  <header class="navbar">
     <div class="nav-left">
       <img src="/img/logo.png" alt="Tong-Eiw Logo" class="logo">
     </div>
@@ -24,10 +22,8 @@
     </div>
   </header>
 
-  <!-- Background -->
   <div class="bg"></div>
 
-  <!-- Card -->
   <main class="wrap">
     <section class="card">
       <h2 class="card-title">อัปเดตสถานะโต๊ะ</h2>
@@ -37,7 +33,6 @@
         <div class="col-left">
           <div class="col-header">โต๊ะที่</div>
           <hr class="col-sep">
-
           <div class="row">โต๊ะ 1</div>
           <div class="row">โต๊ะ 2</div>
           <div class="row">โต๊ะ 3</div>
@@ -52,28 +47,29 @@
           <div class="col-header center">สถานะ</div>
           <hr class="col-sep">
 
-          <div class="row right">
+          <!-- กำหนด data-table ให้รู้ว่าแถวนี้คุมโต๊ะไหน -->
+          <div class="row right" data-table="1">
             <div class="btn-group">
               <button class="btn btn-free" data-state="free">ว่าง</button>
               <button class="btn btn-busy" data-state="busy">ไม่ว่าง</button>
             </div>
           </div>
 
-          <div class="row right">
+          <div class="row right" data-table="2">
             <div class="btn-group">
               <button class="btn btn-free" data-state="free">ว่าง</button>
               <button class="btn btn-busy" data-state="busy">ไม่ว่าง</button>
             </div>
           </div>
 
-          <div class="row right">
+          <div class="row right" data-table="3">
             <div class="btn-group">
               <button class="btn btn-free" data-state="free">ว่าง</button>
               <button class="btn btn-busy" data-state="busy">ไม่ว่าง</button>
             </div>
           </div>
 
-          <div class="row right">
+          <div class="row right" data-table="4">
             <div class="btn-group">
               <button class="btn btn-free" data-state="free">ว่าง</button>
               <button class="btn btn-busy" data-state="busy">ไม่ว่าง</button>
@@ -85,22 +81,24 @@
   </main>
 
   <script>
+    // ไฮไลต์ปุ่มที่เลือก + ส่งต่อไปที่ reserve พร้อมเลขโต๊ะ & สถานะ
+    document.querySelectorAll('.row.right').forEach(row => {
+      row.addEventListener('click', e => {
+        const btn = e.target.closest('.btn');
+        if (!btn) return;
 
-document.querySelectorAll('.row.right').forEach(row => {
-  row.addEventListener('click', e => {
-    const btn = e.target.closest('.btn');
-    if (!btn) return;
+        // สวยงาม: ทำให้ปุ่มที่เลือกสว่างขึ้น
+        row.querySelectorAll('.btn').forEach(b => b.classList.remove('is-on'));
+        btn.classList.add('is-on');
 
- 
-    row.querySelectorAll('.btn').forEach(b => b.classList.remove('is-on'));
-    btn.classList.add('is-on');
+        const table = row.dataset.table;           // เลขโต๊ะ
+        const state = btn.dataset.state;           // free | busy
 
-  });
-});
-
-
-
-
+        // เด้งไปหน้า reserve พร้อมข้อมูล
+        const url = `/reserve.html?table=${encodeURIComponent(table)}&status=${encodeURIComponent(state)}`;
+        window.location.href = url;
+      });
+    });
   </script>
 </body>
 </html>
