@@ -76,25 +76,85 @@
     </section>
   </main>
 
-  <script>
-    // ไฮไลต์ปุ่มที่เลือก + ส่งต่อไปที่ reserve พร้อมเลขโต๊ะ & สถานะ
-    document.querySelectorAll('.row.right').forEach(row => {
-      row.addEventListener('click', e => {
+  <script defer src="/js/api.js"></script>
+<script>
+    // ✅ 1. เพิ่มโค้ดตรวจสอบสิทธิ์ (Auth Check) ก่อน
+    document.addEventListener("DOMContentLoaded", () => {
+      const user = JSON.parse(localStorage.getItem("authUser") || "null");
+      if (!user || user.shopName !== "TongEiw") {
+        alert("เฉพาะเจ้าของร้านเท่านั้นที่สามารถเข้าหน้านี้ได้");
+        window.location.href = "/login.html"; 
+      }
+    });
+
+    // 2. โค้ด Logic อัปเดตสถานะโต๊ะ (ใช้ LocalStorage)
+    const rightRows = document.querySelectorAll('.col-right .row.right');
+    rightRows.forEach((row, i) => row.dataset.table = String(i + 1));
+
+    function loadReserved() {
+      try { return JSON.parse(localStorage.getItem('reservedTables')) || []; }
+      catch { return []; }
+    }
+    function saveReserved(next) {
+      localStorage.setItem('reservedTables', JSON.stringify(next));
+    }
+
+    // อัปเดตสถานะใน localStorage
+    async function setTableState(tableId, state) {
+      let list = loadReserved().map(String);
+      if (state === 'busy') {
+        if (!list.includes(tableId)) list.push(tableId);
+      } else { // free
+        list = list.filter(t => t !== tableId);
+      }
+      saveReserved(list);
+
+      // (ทางเลือก: ถ้ามีการเพิ่ม API Endpoint สำหรับ Table Status
+      //  สามารถเรียก API ที่นี่ได้)
+    }
+
+    // ไฮไลต์ปุ่มตามสถานะใน localStorage
+    function applyUIFromStorage() {
+      const busy = loadReserved().map(String);
+      rightRows.forEach(row => {
+        const tableId = row.dataset.table;
+        // ลบ is-on ออกจากทุกปุ่ม
+        row.querySelectorAll('.btn').forEach(b => b.classList.remove('is-on'));
+        
+        // กำหนด is-on ให้ปุ่มที่ควรเลือก
+        const target = row.querySelector(busy.includes(tableId) ? '.btn-busy' : '.btn-free');
+        if (target) target.classList.add('is-on');
+      });
+    }
+
+    // 3. คลิกปุ่มว่าง/ไม่ว่าง
+    rightRows.forEach(row => {
+      row.addEventListener('click', async (e) => {
         const btn = e.target.closest('.btn');
         if (!btn) return;
+        
+        const tableId = row.dataset.table;
+        const state = btn.dataset.state; // 'free' | 'busy'
+        
+        // บันทึกสถานะ
+        await setTableState(tableId, state);
 
-        // สวยงาม: ทำให้ปุ่มที่เลือกสว่างขึ้น
+        // อัปเดต UI แถวนี้
         row.querySelectorAll('.btn').forEach(b => b.classList.remove('is-on'));
         btn.classList.add('is-on');
-
-        const table = row.dataset.table;           // เลขโต๊ะ
-        const state = btn.dataset.state;           // free | busy
-
-        // เด้งไปหน้า reserve พร้อมข้อมูล
-        const url = `/reserve.html?table=${encodeURIComponent(table)}&status=${encodeURIComponent(state)}`;
-        window.location.href = url;
+        
+        // ✅ แจ้งเตือนการอัปเดต
+        alert(`อัปเดตสถานะโต๊ะ ${tableId} เป็น "${state === 'busy' ? 'ไม่ว่าง' : 'ว่าง'}" สำเร็จ!`);
       });
     });
-  </script>
+
+    // เปิดหน้านี้ครั้งแรก → sync UI ให้ตรงกับ storage
+    applyUIFromStorage();
+
+    // ถ้ามีการแก้ไข reservedTables จากหน้าอื่น (เช่น reserve.html)
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'reservedTables') applyUIFromStorage();
+    });
+</script>
 </body>
 </html>

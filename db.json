@@ -152,7 +152,7 @@
       "phone": "0923145562",
       "email": "",
       "date": "2025-10-18",
-      "status": "pending"
+      "status": "confirmed"
     },
     {
       "id": "RSV6NP2",
@@ -161,6 +161,15 @@
       "phone": "087654213",
       "email": "",
       "date": "2025-10-20",
+      "status": "confirmed"
+    },
+    {
+      "id": "RSVJITI",
+      "table": "4",
+      "name": "๋joox",
+      "phone": "0123456789",
+      "email": "u@gmail.com",
+      "date": "2025-10-18",
       "status": "confirmed"
     }
   ]
