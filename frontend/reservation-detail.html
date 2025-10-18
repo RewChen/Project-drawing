@@ -78,25 +78,39 @@
     </div>
   </main>
 
-  <script defer src="/js/api.js"></script>
+<script defer src="/js/api.js"></script>
 <script>
-const q = new URLSearchParams(location.search);
-const id = q.get("id");
-const detail = document.getElementById("detail");
-document.addEventListener("DOMContentLoaded", async ()=>{
-  try{
-    const r = await API.get(id);
-    detail.textContent =
-`โต๊ะ: ${r.table}
-วันที่: ${r.date}
-ชื่อ: ${r.name}
-อีเมล: ${r.email || "-"}
-เบอร์: ${r.phone}
+  const q = new URLSearchParams(location.search);
+  const id = q.get("id");
+  const detail = document.getElementById("detail");
+
+  // ฟังก์ชันลบคำว่า "โต๊ะ" ที่มากับค่าดิบ
+  const tableNumber = (val) => (val ?? '')
+    .toString()
+    .trim()
+    .replace(/^โต๊ะ\s*/i, '');  // ตัดคำว่า "โต๊ะ " ด้านหน้าออก
+
+  document.addEventListener("DOMContentLoaded", async ()=>{
+    try {
+      const r = await API.get(id);
+
+      const dateOnly = r.date?.split('T')[0] ?? r.date ?? '-';
+      const rawTable  = r.table ?? r.table_name ?? '';
+      const tnum      = tableNumber(rawTable);   // <- ได้เป็น "1", "2", ...
+
+      detail.textContent =
+`หมายเลขการจอง: ${r.id ?? '-'}
+โต๊ะ: ${tnum || '-'}
+วันที่: ${dateOnly}
+ชื่อ: ${r.name ?? '-'}
+อีเมล: ${r.email ?? '-'}
+เบอร์: ${r.phone ?? '-'}
 สถานะ: ${API.statusText(r.status)}`;
-  }catch(err){
-    detail.textContent = "❌ " + err.message;
-  }
-});
-  </script>
+    } catch (err) {
+      detail.textContent = "❌ " + err.message;
+      console.error(err);
+    }
+  });
+</script>
 </body>
 </html>

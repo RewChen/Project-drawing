@@ -42,9 +42,7 @@
     }
 
     .actions { margin-top:18px; display:flex; gap:12px; justify-content:flex-end; }
-    .btn {
-      border:0; border-radius:999px; padding:10px 24px; font-size:16px; cursor:pointer;
-    }
+    .btn { border:0; border-radius:999px; padding:10px 24px; font-size:16px; cursor:pointer; }
     .btn-primary { background:#124d2d; color:#fff; }
     .btn-primary:hover { filter:brightness(1.1); }
     .btn-ghost { background:transparent; color:#fff; outline:2px solid #fff; }
@@ -90,7 +88,7 @@
             <input type="email" id="email" placeholder="เช่น name@example.com" />
           </div>
           <div class="col">
-            <label for="date">วันที่จอง (แก้ไขได้)</label>
+            <label for="date">วันที่จอง</label>
             <input type="date" id="date" required />
           </div>
         </div>
@@ -104,73 +102,79 @@
     </div>
   </div>
 
-<script defer src="/js/api.js"></script>
+  <script defer src="/js/api.js"></script>
 
-<script>
-  // เติมค่าเริ่มต้นจากหน้าก่อนหน้า (ถ้าบันทึกไว้)
-  document.addEventListener('DOMContentLoaded', () => {
-    const table = localStorage.getItem('reservationTable');
-    const date  = localStorage.getItem('reservationDate');
-    if (table && document.getElementById('table')) {
-      document.getElementById('table').value = table;
-    }
-    if (date && document.getElementById('date')) {
-      document.getElementById('date').value = date;
-    }
-  });
+  <script>
+    // เติมชื่อโต๊ะและวันที่จากหน้าก่อนหน้า
+    document.addEventListener('DOMContentLoaded', () => {
+      const tableLabel = localStorage.getItem('reservationTable');   // เช่น "โต๊ะ 4"
+      const dateSaved  = localStorage.getItem('reservationDate');    // YYYY-MM-DD
+      if (tableLabel) document.getElementById('displayTable').textContent = tableLabel;
+      if (dateSaved)  document.getElementById('displayDate').textContent  = dateSaved;
+      if (dateSaved && document.getElementById('date')) document.getElementById('date').value = dateSaved;
+    });
 
-  // ---- ผูกกับฟอร์ม/ปุ่มยืนยัน ----
-  // แนะนำให้ห่ออินพุตด้วย <form id="reserveForm"> ... </form>
-  // และปุ่มยืนยันเป็น type="submit"
-  const form = document.getElementById('reserveForm') || document.querySelector('form');
-  const confirmBtn = document.getElementById('confirmBtn') || document.querySelector('#confirmBtn, [data-confirm]');
+    const form = document.getElementById('reserveForm');
+    const confirmBtn = document.getElementById('confirmBtn');
 
-  // ถ้ามีฟอร์ม -> ใช้ submit; ถ้าไม่มี -> ใช้คลิกปุ่ม
-  if (form) {
     form.addEventListener('submit', handleSubmit);
-  } else if (confirmBtn) {
-    confirmBtn.addEventListener('click', handleSubmit);
-  }
 
-  async function handleSubmit(e){
-    if (e) e.preventDefault();
-
-    const get = id => document.getElementById(id)?.value?.trim() || "";
-    const payload = {
-      table: get('table') || localStorage.getItem('reservationTable') || "1",
-      name : get('name')  || get('custName')  || "",       // รองรับ id ที่ต่างกัน
-      phone: get('phone') || get('custPhone') || "",
-      email: get('email') || "",
-      date : get('date')  || localStorage.getItem('reservationDate') || ""
-    };
-
-    // ตรวจค่าจำเป็น
-    if (!payload.name || !payload.phone || !payload.date) {
-      alert('กรุณากรอกชื่อ เบอร์โทร และวันที่ให้ครบ');
-      return;
+    function parseTableId() {
+      const savedId = Number(sessionStorage.getItem('selected_table_id'));
+      if (savedId) return savedId;
+      const label = localStorage.getItem('reservationTable') || '';
+      const m = label.match(/\d+/);
+      return m ? Number(m[0]) : NaN;
     }
 
-    // กันกดย้ำ
-    if (confirmBtn) {
-      confirmBtn.disabled = true;
-      confirmBtn.textContent = 'กำลังบันทึก...';
-    }
+    async function handleSubmit(e) {
+      e.preventDefault();
 
-    try {
-      const { newItem } = await API.create(payload);   // เรียก backend จริง
-      localStorage.setItem('lastReservationId', newItem.id);
-      // ไปหน้าถัดไป
-      window.location.href = '/booking-notify.html?id=' + encodeURIComponent(newItem.id);
-    } catch (err) {
-      alert('บันทึกไม่สำเร็จ: ' + err.message);
-      console.error(err);
-    } finally {
-      if (confirmBtn) {
+      const name  = document.getElementById('name').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const date  = document.getElementById('date').value;
+      const tableId = parseTableId();
+
+      if (!tableId || !name || !date) {
+        alert('กรุณากรอก โต๊ะ/ชื่อ/วันที่ ให้ครบถ้วน');
+        return;
+      }
+
+      try {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = 'กำลังบันทึก...';
+
+        // ✅ ไม่มีเวลา — ให้ backend ใช้ค่า default
+        const result = await API.create({
+          table_id: tableId,
+          customer_name: name,
+          phone: phone || null,
+          email: email || null,
+          reserve_date: date,
+          duration_min: 120
+        });
+
+        const newId = result?.id || result?.newItem?.id;
+        if (!newId) {
+          alert('บันทึกสำเร็จ แต่ไม่ได้รับหมายเลขการจองกลับมา');
+        } else {
+          localStorage.setItem('lastReservationId', newId);
+          window.location.href = '/booking-notify.html?id=' + encodeURIComponent(newId);
+        }
+      } catch (err) {
+        let msg = err?.message || 'บันทึกไม่สำเร็จ';
+        try {
+          const resp = err.responseJSON ?? (await err.response?.json());
+          if (resp?.message || resp?.error) msg = resp.message || resp.error;
+        } catch {}
+        alert('บันทึกไม่สำเร็จ: ' + msg);
+        console.error(err);
+      } finally {
         confirmBtn.disabled = false;
         confirmBtn.textContent = 'ยืนยันจอง';
       }
     }
-  }
-</script>
+  </script>
 </body>
 </html>
