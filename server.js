@@ -1,178 +1,207 @@
-// server.js
-const express = require("express");
-const cors = require("cors");
-const fs = require("fs");
-const path = require("path");
+import express from "express";
+import cors from "cors";
+import pool from "./db/db.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-// ✅ helper: gen id
-function genId(len = 6) {
-  const c = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let s = "";
-  for (let i = 0; i < len; i++) s += c[Math.floor(Math.random() * c.length)];
-  return s;
-}
-
-// ✅ NEW: ทำ id ให้เป็นรูปแบบเดียวกัน (ตัด '-', '_' และ upper-case)
-function normId(s) {
-  return String(s || "").replace(/[-_]/g, "").toUpperCase();
-}
-
-// ✅ middlewares
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "frontend")));
 
-const DB_PATH = path.join(__dirname, "db.json");
+// ---------------- Reservations API ----------------
 
-// ✅ db helpers
-function ensureDB() {
-  if (!fs.existsSync(DB_PATH)) {
-    const seed = {
-      reservations: [
-        { id: "RSV001", table: "1", name: "ไอเติ้ล", phone: "0999999999", date: "18/04/2023", email: "12345@gmail.com", status: "pending" },
-        { id: "RSV002", table: "2", name: "ออมสิน", phone: "0812345678", date: "05/05/2024", email: "aomsin@example.com", status: "pending" }
-      ]
-    };
-    fs.writeFileSync(DB_PATH, JSON.stringify(seed, null, 2));
+// GET /api/reservations  (list)
+app.get("/api/reservations", async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT
+        r.reservation_id       AS id,
+        t.table_name           AS \`table\`,     -- ✅ ใช้ \`table\` (หลีกเลี่ยงชน keyword)
+        r.customer_name        AS \`name\`,
+        DATE(r.reserve_date)   AS \`date\`,      -- ✅ เอาเวลาออก
+        r.status
+      FROM reservations r
+      JOIN tables t ON r.table_id = t.table_id
+      ORDER BY r.created_at DESC
+    `);
+    res.json(rows);
+  } catch (err) {
+    console.error("❌ DB Error:", err);
+    res.status(500).json({ error: "DB_QUERY_ERROR" });
   }
-}
-function loadDB() {
-  ensureDB();
-  return JSON.parse(fs.readFileSync(DB_PATH, "utf8"));
-}
-function saveDB(data) {
-  fs.writeFileSync(DB_PATH, JSON.stringify(data, null, 2));
-}
+});
 
-// ✅ default route -> main.html
+// GET /api/reservations/:id  (detail)
+app.get("/api/reservations/:id", async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT
+        r.reservation_id AS id,
+        t.table_name     AS table_name,
+        r.customer_name  AS name,
+        r.reserve_date   AS date,
+        r.phone, r.email,
+        r.status, r.cancel_reason
+      FROM reservations r
+      JOIN tables t ON r.table_id = t.table_id
+      WHERE r.reservation_id = ?
+    `, [req.params.id]);
+    if (!rows.length) return res.status(404).json({ error: "NOT_FOUND" });
+    res.json(rows[0]);
+  } catch (e) {
+    console.error("DETAIL_ERROR:", e);
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+// POST /api/reservations (create) — UI ไม่มีเวลา แต่ DB ยังต้องการคอลัมน์นี้ → ใส่ค่า default
+app.post("/api/reservations", async (req, res) => {
+  try {
+    const {
+      table_id,
+      customer_name,
+      phone = null,
+      email = null,
+      reserve_date,
+      // แม้ UI จะไม่ส่งมา เราตั้ง default เอง
+      reserve_time,
+      duration_min = 120,
+    } = req.body || {};
+
+    if (!table_id || !customer_name || !reserve_date) {
+      return res.status(400).json({ error: "MISSING_FIELDS", message: "กรอก โต๊ะ/ชื่อ/วันที่ ให้ครบ" });
+    }
+
+    // ถ้าไม่ได้ส่ง reserve_time มา ให้ตั้งเป็น 00:00:00 เสมอ เพื่อให้ตรงกับสคีมา/ทริกเกอร์ที่คาดหวัง
+    const timeForDb = (!reserve_time || !/^\d{2}:\d{2}(:\d{2})?$/.test(reserve_time))
+      ? "00:00:00"
+      : (reserve_time.length === 5 ? `${reserve_time}:00` : reserve_time);
+
+    await pool.query(
+      `INSERT INTO reservations
+        (table_id, customer_name, phone, email, reserve_date, reserve_time, duration_min, status)
+       VALUES (?,?,?,?,?,?,?, 'pending')`,
+      [table_id, customer_name, phone, email, reserve_date, timeForDb, duration_min]
+    );
+
+    const [[row]] = await pool.query(`
+      SELECT r.reservation_id AS id,
+             t.table_name AS table_name,
+             r.customer_name AS name,
+             r.reserve_date AS date,
+             r.status
+      FROM reservations r
+      JOIN tables t ON r.table_id = t.table_id
+      WHERE r.reservation_id = LAST_INSERT_ID()
+    `);
+
+    res.status(201).json({ success: true, newItem: row });
+  } catch (e) {
+    if (e && (e.code === "ER_SIGNAL_EXCEPTION" || String(e.sqlMessage || "").includes("จองซ้อน"))) {
+      return res.status(409).json({ error: "OVERLAP", message: "มีการจองซ้อนสำหรับโต๊ะนี้ในช่วงเวลาเดียวกัน" });
+    }
+    console.error("CREATE_ERROR:", e);
+    res.status(500).json({ error: "DB_ERROR", message: "สร้างการจองไม่สำเร็จ" });
+  }
+});
+
+// POST /api/reservations/search  (by name/phone)
+// POST /api/reservations/search  (by name/phone)
+app.post("/api/reservations/search", async (req, res) => {
+  const { name = "", phone = "" } = req.body ?? {};
+  try {
+    const [rows] = await pool.query(`
+      SELECT 
+        r.reservation_id AS id,
+        t.table_name     AS table,          -- ✅ ให้ชื่อฟิลด์เป็น table
+        r.customer_name  AS name,
+        DATE_FORMAT(r.reserve_date, '%Y-%m-%d') AS date,  -- ✅ วันที่แบบ YYYY-MM-DD
+        r.status
+      FROM reservations r 
+      JOIN tables t ON r.table_id = t.table_id
+      WHERE (? = '' OR r.customer_name LIKE CONCAT('%',?,'%'))
+        AND (? = '' OR r.phone        LIKE CONCAT('%',?,'%'))
+      ORDER BY r.created_at DESC
+    `, [name, name, phone, phone]);
+
+    res.json(rows);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+// POST /api/reservations/:id/confirm
+app.post("/api/reservations/:id/confirm", async (req, res) => {
+  try {
+    await pool.query("CALL sp_confirm_reservation(?)", [req.params.id]);
+    const [[row]] = await pool.query(`
+      SELECT r.reservation_id AS id, t.table_name AS table_name,
+             r.customer_name AS name, r.reserve_date AS date, r.status
+      FROM reservations r JOIN tables t ON r.table_id = t.table_id
+      WHERE r.reservation_id = ?
+    `, [req.params.id]);
+    res.json(row);
+  } catch (e) {
+    console.error("CONFIRM_ERROR:", e);
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+// POST /api/reservations/:id/cancel
+app.post("/api/reservations/:id/cancel", async (req, res) => {
+  try {
+    const reason = req.body?.reason ?? "-";
+    await pool.query("CALL sp_cancel_reservation(?, ?)", [req.params.id, reason]);
+    const [[row]] = await pool.query(`
+      SELECT r.reservation_id AS id, t.table_name AS table_name,
+             r.customer_name AS name, r.reserve_date AS date, r.status, r.cancel_reason
+      FROM reservations r JOIN tables t ON r.table_id = t.table_id
+      WHERE r.reservation_id = ?
+    `, [req.params.id]);
+    res.json(row);
+  } catch (e) {
+    console.error("CANCEL_ERROR:", e);
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+// POST /api/reservations/:id/restore
+app.post("/api/reservations/:id/restore", async (req, res) => {
+  try {
+    await pool.query("CALL sp_restore_reservation(?)", [req.params.id]);
+    const [[row]] = await pool.query(`
+      SELECT r.reservation_id AS id, t.table_name AS table_name,
+             r.customer_name AS name, r.reserve_date AS date, r.status
+      FROM reservations r JOIN tables t ON r.table_id = t.table_id
+      WHERE r.reservation_id = ?
+    `, [req.params.id]);
+    res.json(row);
+  } catch (e) {
+    console.error("RESTORE_ERROR:", e);
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+// Tables API
+app.get("/api/tables", async (_req, res) => {
+  try {
+    const [rows] = await pool.query("SELECT * FROM tables");
+    res.json(rows);
+  } catch (e) {
+    console.error("TABLES_ERROR:", e);
+    res.status(500).json({ error: "DB_ERROR" });
+  }
+});
+
+// route เริ่มต้น
 app.get("/", (_req, res) => {
-  res.sendFile(path.join(__dirname, "frontend", "main.html"));
+  res.sendFile(path.join(__dirname, "frontend", "reserve.html"));
 });
 
-// ✅ list
-app.get("/api/reservations", (_req, res) => {
-  const db = loadDB();
-  res.json(db.reservations);
-});
-
-// ✅ search by name/phone
-app.post("/api/reservations/search", (req, res) => {
-  const { name = "", phone = "" } = req.body || {};
-  const db = loadDB();
-  const results = db.reservations.filter(
-    (r) => (!name || r.name.includes(name)) && (!phone || r.phone.includes(phone))
-  );
-  res.json(results);
-});
-
-// ✅ get by id  (ใช้ normId เทียบ)
-app.get("/api/reservations/:id", (req, res) => {
-  const db = loadDB();
-  const rid = normId(req.params.id);
-  const item = db.reservations.find((r) => normId(r.id) === rid);
-  if (!item) return res.status(404).json({ error: "ไม่พบข้อมูล" });
-  res.json(item);
-});
-
-// ✅ confirm
-app.post("/api/reservations/:id/confirm", (req, res) => {
-  const db = loadDB();
-  const rid = normId(req.params.id);
-  const item = db.reservations.find((r) => normId(r.id) === rid);
-  if (!item) return res.status(404).json({ error: "ไม่พบข้อมูล" });
-  item.status = "confirmed";
-  saveDB(db);
-  res.json({ message: "ยืนยันการจองสำเร็จ", item });
-});
-
-// ✅ cancel (บันทึก reason ด้วย)
-app.post("/api/reservations/:id/cancel", (req, res) => {
-  const db = loadDB();
-  const rid = normId(req.params.id);
-  const item = db.reservations.find((r) => normId(r.id) === rid);
-  if (!item) return res.status(404).json({ error: "ไม่พบข้อมูล" });
-  item.status = "canceled";
-  item.reason = req.body?.reason || "-";
-  saveDB(db);
-  res.json({ message: "ยกเลิกการจองสำเร็จ", item });
-});
-
-// ✅ restore
-app.post("/api/reservations/:id/restore", (req, res) => {
-  const db = loadDB();
-  const rid = normId(req.params.id);
-  const item = db.reservations.find((r) => normId(r.id) === rid);
-  if (!item) return res.status(404).json({ error: "ไม่พบข้อมูล" });
-  item.status = "pending";
-  delete item.reason;
-  saveDB(db);
-  res.json({ message: "กู้คืนรายการสำเร็จ", item });
-});
-
-// ✅ create
-app.post("/api/reservations", (req, res) => {
-  const { table, name, phone, email, date } = req.body || {};
-  if (!table || !name || !phone || !date) {
-    return res.status(400).json({ error: "กรอกข้อมูลให้ครบ: table, name, phone, date" });
-  }
-  const db = loadDB();
-  const newItem = {
-    id: "RSV" + genId(4),
-    table,
-    name,
-    phone,
-    email: email || "",
-    date,
-    status: "pending",
-  };
-  db.reservations.push(newItem);
-  saveDB(db);
-  res.json({ message: "บันทึกการจองสำเร็จ", newItem });
-});
-
-// ✅ start server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
-
-app.post("/api/reservations", (req, res) => {
-  const { table, name, phone, email, date } = req.body || {};
-  if (!table || !name || !phone || !date) {
-    return res.status(400).json({ error: "กรอกข้อมูลให้ครบ: table, name, phone, date" });
-  }
-  const db = loadDB();
-  const newItem = {
-    id: "RSV" + genId(4),
-    table, name, phone, email: email || "", date,
-    status: "pending",
-    createdAt: new Date().toISOString() // ← สำคัญ
-  };
-  db.reservations.push(newItem);
-  saveDB(db);
-  res.json({ message: "บันทึกการจองสำเร็จ", newItem });
-});
-
-// [แทน endpoint list เดิม: รองรับ status / sort / limit / since]
-app.get("/api/reservations", (req, res) => {
-  const { status, sort = "desc", limit, since } = req.query;
-  const db = loadDB();
-  let items = [...db.reservations];
-
-  if (status) items = items.filter(r => r.status === status);
-  if (since) {
-    const t = Date.parse(since);
-    if (!Number.isNaN(t)) items = items.filter(r => Date.parse(r.createdAt || 0) >= t);
-  }
-  items.sort((a, b) => {
-    const ta = Date.parse(a.createdAt || 0);
-    const tb = Date.parse(b.createdAt || 0);
-    return sort === "asc" ? ta - tb : tb - ta;
-  });
-  const n = parseInt(limit, 10);
-  if (!Number.isNaN(n) && n > 0) items = items.slice(0, n);
-  res.json(items);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
